@@ -1,0 +1,58 @@
+Actúa como un Arquitecto de Software y Desarrollador Full Stack Experto (MERN Stack + TypeScript).
+
+Necesito desarrollar el "Sistema de Cómputo Electoral Municipal (SCEM)", una aplicación web para el registro y visualización en tiempo real de resultados electorales, basándose en un flujo de trabajo oficial (tipo OEP Bolivia).
+
+⚙️ Stack Tecnológico:
+
+Backend: Node.js, Express.js, TypeScript, MongoDB (Atlas), Mongoose (ODM), JWT (Autenticación).
+
+Frontend: React, Vite, React Router DOM, Tailwind CSS, Recharts o Chart.js.
+
+👥 Control de Acceso Basado en Roles (RBAC):
+
+Visitante (Público): Sin login. Solo puede ver el Dashboard.
+
+Operador: Requiere JWT. Puede buscar mesas y registrar actas (solo lectura de mesas, creación de actas).
+
+Administrador: Requiere JWT + Rol Admin. Control total, carga masiva de datos (CSV) y auditoría/corrección de actas.
+
+💾 Estructura de Datos Base (MongoDB):
+
+User: Gestión de roles y credenciales.
+
+Mesa: Datos geográficos y padrón (codigoMesa, municipio, recinto, inscritosHabilitados, estadoAlcalde, estadoConcejal).
+
+Candidatura: partido, tipo ('ALCALDE' o 'CONCEJAL'), nombreCandidato.
+
+Acta: Registro de votos (mesaId, tipo, votosValidos, votosBlancos, votosNulos, votosEmitidos, detalleVotos[], digitadorId).
+
+🖥️ Arquitectura de Vistas (Frontend):
+
+/login: Formulario de autenticación.
+
+/dashboard (Público):
+
+Pestañas/Filtros principales para alternar entre "Resultados ALCALDE" y "Resultados CONCEJALES".
+
+Tarjetas de resumen: Votos Válidos, Blancos, Nulos, Emitidos, % de Participación y % de Actas Computadas.
+
+Gráfico de torta (Pie Chart) y tabla de posiciones. Lectura en tiempo real.
+
+/admin: Panel para cargar archivos CSV iniciales y tabla para anular/auditar actas ingresadas.
+
+/digitacion (Formulario Único del Operador):
+
+Buscador en la cabecera por NumeroMesa o CodigoRecinto. Al encontrarla, muestra los datos estáticos (Municipio, Recinto, Inscritos Habilitados).
+
+Diseño Vertical (UI/UX estricto):
+
+Sección Superior (ALCALDE): Título, lista de inputs numéricos para cada candidato, campos para Blancos y Nulos. Barra dinámica de validación.
+
+Separador Visual (Línea horizontal).
+
+Sección Inferior (CONCEJAL): Título, lista de inputs numéricos para cada partido, campos para Blancos y Nulos. Barra dinámica de validación.
+
+Regla de Negocio Crítica: El botón inferior de "Guardar Acta Completa" estará deshabilitado. Solo se habilita si en AMBAS secciones se cumple independientemente que: Suma(Votos Partidos + Blancos + Nulos) === Votos Emitidos Y Votos Emitidos <= Inscritos Habilitados. Al guardar, el backend debe registrar ambas actas en una sola transacción o petición.
+
+🚀 Tu Primera Tarea:
+Escribe el código completo de los Modelos de Mongoose en TypeScript (User.ts, Mesa.ts, Candidatura.ts y Acta.ts) aplicando las mejores prácticas, tipado estricto e índices necesarios. Luego, muestra el esquema del controlador acta.controller.ts que recibirá el payload combinado del frontend y lo separará para guardarlo.
