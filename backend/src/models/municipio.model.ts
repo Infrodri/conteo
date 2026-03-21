@@ -32,7 +32,6 @@ const municipioSchema = new Schema<IMunicipio>(
 );
 
 // Indexes
-municipioSchema.index({ codigoINE: 1 }, { unique: true });
 municipioSchema.index({ departamento: 1 });
 municipioSchema.index({ nombre: 'text' });
 

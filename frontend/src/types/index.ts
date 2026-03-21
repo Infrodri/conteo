@@ -31,23 +31,30 @@ export interface ActaInput {
   votosNulos: number;
 }
 
+// Tipos de candidatura
+export type CandidaturaTipo = 'ALCALDE' | 'CONCEJAL';
+
+// Estados del acta digitada
+export type ActaDigitadaStatus = 'PARCIAL' | 'VALIDA' | 'ANULADA';
+
+// Payload para registrar acta (legacy)
 export interface ActaPayload {
   mesaId: string;
   votosEmitidos: number;
   alcalde: ActaInput;
-  alcaldeVacio?: ActaInput;
-  ganadorAlcalde: string;
-  ganadorConcejal: string;
+  /** Sección CONCEJAL - requerida por el backend */
+  edil: ActaInput;
   ejemplar: number;
-  劇場: string;
-  劇場Concejal: string;
-  tipoMesa: string;
-  fecha: string;
-  prefectural?: string;
-  municipal?: string;
-  provincial?: string;
-  regional?: string;
-  concejal: ActaInput;
+  winnerAlcalde?: string;
+  winnerConcejal?: string;
+  tipo?: string;
+  fecha?: string;
+  elecciones?: string;
+  municipio?: string;
+  recinto?: string;
+  numeroMesa?: string;
+  /** Legacy field - extra properties allowed */
+  [key: string]: unknown;
 }
 
 export interface ApiResponse<T> {

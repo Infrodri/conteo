@@ -1,6 +1,10 @@
 import mongoose from 'mongoose';
+import dns from 'dns';
 import { createApp } from './app';
 import { config } from './config';
+
+// Usar DNS de Google para resolver SRV records
+dns.setServers(['8.8.8.8', '8.8.4.4']);
 
 const startServer = async (): Promise<void> => {
   try {

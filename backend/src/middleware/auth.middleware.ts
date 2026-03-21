@@ -1,4 +1,16 @@
 import { Response, Request, NextFunction } from 'express';
+
+interface MulterFile {
+  fieldname: string;
+  originalname: string;
+  encoding: string;
+  mimetype: string;
+  size: number;
+  destination: string;
+  filename: string;
+  path: string;
+  buffer: Buffer;
+}
 import jwt from 'jsonwebtoken';
 import { config } from '@/config';
 import { UserModel, UserRole } from '@/models';
@@ -11,9 +23,10 @@ export interface JwtPayload {
   rol: UserRole;
 }
 
-export interface AuthRequest extends Request {
+export interface AuthRequest extends Omit<Request, 'file'> {
   user?: IUser;
   userPayload?: JwtPayload;
+  file?: MulterFile;
 }
 
 export const authenticate = async (
@@ -56,7 +69,7 @@ export const authenticate = async (
   }
 };
 
-export const authorize = (...roles: UserRole[]): AuthRequest => {
+export const authorize = (...roles: UserRole[]): (req: AuthRequest, res: Response, next: NextFunction) => void => {
   return (req: AuthRequest, _res: Response, next: NextFunction): void => {
     if (!req.user) {
       next(new UnauthorizedError('No autenticado'));

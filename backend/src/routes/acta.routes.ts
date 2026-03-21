@@ -1,52 +1,59 @@
-import { Router } from 'express';
+import { Router, Response, NextFunction } from 'express';
 import {
   buscarMesa,
   getCandidaturas,
-  registrarActaCompleta,
-  anularActa,
+  getActasMesa,
+  guardarActaDigitada,
+  anularActaDigitada,
   getAuditoriaActa,
 } from '@/controllers/acta.controller';
-import { authenticate, optionalAuth } from '@/middleware/auth.middleware';
+import { authenticate, AuthRequest } from '@/middleware/auth.middleware';
 import { UserRole } from '@/models';
 
 const router = Router();
 
 /**
  * @route   GET /api/actas/mesa
- * @desc    Buscar mesa por código
+ * @desc    Buscar mesa por filtros
  * @access  Private (Operador, Admin)
  */
 router.get('/mesa', authenticate, buscarMesa);
 
 /**
  * @route   GET /api/actas/candidaturas
- * @desc    Obtener candidaturas por tipo
+ * @desc    Obtener candidaturas por municipio y tipo
  * @access  Private (Operador, Admin)
  */
 router.get('/candidaturas', authenticate, getCandidaturas);
 
 /**
- * @route   POST /api/actas/registrar
- * @desc    Registrar acta completa (Alcalde + Concejil)
+ * @route   GET /api/actas/mesa/:mesaId/actas
+ * @desc    Obtener actas de una mesa
  * @access  Private (Operador, Admin)
  */
-router.post('/registrar', authenticate, registrarActaCompleta);
+router.get('/mesa/:mesaId/actas', authenticate, getActasMesa);
+
+/**
+ * @route   POST /api/actas/mesa/:mesaId/acta
+ * @desc    Guardar/actualizar acta digitada (parcial o confirmar)
+ * @access  Private (Operador, Admin)
+ */
+router.post('/mesa/:mesaId/acta', authenticate, guardarActaDigitada);
 
 /**
  * @route   PATCH /api/actas/:id/anular
  * @desc    Anular un acta
  * @access  Private (Admin only)
  */
-router.patch('/:id/anular', authenticate, (req, res, next) => {
-  // Inline authorization for admin-only endpoint
+router.patch('/:id/anular', authenticate, (req: AuthRequest, _res: Response, next: NextFunction) => {
   if (req.user!.rol !== UserRole.ADMIN) {
-    return res.status(403).json({
+    return _res.status(403).json({
       success: false,
       message: 'Solo administradores pueden anular actas',
     });
   }
   next();
-}, anularActa);
+}, anularActaDigitada);
 
 /**
  * @route   GET /api/actas/:id/auditoria

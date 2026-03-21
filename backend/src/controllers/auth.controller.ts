@@ -8,7 +8,7 @@ import { BadRequestError, UnauthorizedError, ConflictError } from '@/utils/error
 import { AuthRequest } from '@/middleware/auth.middleware';
 
 const generateToken = (payload: { userId: string; email: string; rol: UserRole }): string => {
-  return jwt.sign(payload, config.jwt.secret, { expiresIn: config.jwt.expiresIn });
+  return jwt.sign(payload, config.jwt.secret, { expiresIn: '24h' });
 };
 
 export const register = asyncHandler(async (req: AuthRequest, res: Response): Promise<void> => {

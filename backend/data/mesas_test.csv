@@ -1,0 +1,13 @@
+NombreProvincia,NombreMunicipio,NombreLocalidad,NombreRecinto,NumeroMesa,InscritosHabilitados,voto1,voto2,voto3,voto4,voto5,voto6,voto7,voto8,voto9,voto10,voto11,voto12,voto13,VotoValido,VotoBlanco,VotoNuloDirecto,VotoNuloDeclinacion,TotalVotoNulo,VotoEmitido
+Cercado,Cochabamba,Centro, Coliseo,A1,250,120,85,45,0,0,0,0,0,0,0,0,0,0,250,10,5,2,7,267
+Cercado,Cochabamba,Centro, Coliseo,A2,245,110,90,40,0,0,0,0,0,0,0,0,0,0,240,8,4,3,7,255
+Cercado,Cochabamba,Sacaba, Unidad,B1,300,150,100,50,0,0,0,0,0,0,0,0,0,0,300,15,8,4,12,327
+Cercado,Cochabamba,Sacaba, Unidad,B2,280,140,95,42,0,0,0,0,0,0,0,0,0,0,277,12,6,3,9,298
+TDD,Camia,Central, Estadio,C1,200,80,70,50,0,0,0,0,0,0,0,0,0,0,200,5,3,2,5,210
+TDD,Camia,Central, Estadio,C2,190,75,65,48,0,0,0,0,0,0,0,0,0,0,0,188,4,4,1,5,197
+TDD,Camia,Norte, Salon,D1,220,90,80,50,0,0,0,0,0,0,0,0,0,0,0,220,6,5,3,8,234
+TDD,Camia,Norte, Salon,D2,210,85,75,48,0,0,0,0,0,0,0,0,0,0,0,0,208,5,4,2,6,219
+Quillacollo,Quillacollo,Principal, Teatro,E1,280,130,95,55,0,0,0,0,0,0,0,0,0,0,280,10,7,3,10,300
+Quillacollo,Quillacollo,Principal, Teatro,E2,275,125,100,48,0,0,0,0,0,0,0,0,0,0,273,9,6,4,10,292
+Quillacollo,Quillacollo,Sipe, Centro,F1,260,100,110,50,0,0,0,0,0,0,0,0,0,0,260,8,5,2,7,275
+Quillacollo,Quillacollo,Sipe, Centro,F2,255,95,105,52,0,0,0,0,0,0,0,0,0,0,0,252,7,6,3,9,268

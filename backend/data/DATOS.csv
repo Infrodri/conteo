@@ -1,0 +1,105 @@
+CodigoMesa;Descripcion;CodigoPais;NombrePais;CodigoDepartamento;NombreDepartamento;CodigoCircunscripcionU;CodigoCircunscripcionE;CodigoProvincia;NombreProvincia;CodigoSeccion;NombreMunicipio;CodigoLocalidad;NombreLocalidad;CodigoRecinto;NombreRecinto;NumeroMesa;InscritosHabilitados;Voto1;Voto2;Voto3;Voto4;Voto5;Voto6;Voto7;Voto8;Voto9;Voto10;Voto11;Voto12;Voto13;VotoValido;VotoBlanco;VotoNuloDirecto;VotoNuloDeclinacion;TotalVotoNulo;VotoEmitido;VotoValidoReal;VotoEmitidoReal
+5019061;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1744;Puna(C.Villa Talavera);332;Esc. Jose Maria Linares;1;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019071;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1744;Puna(C.Villa Talavera);332;Esc. Jose Maria Linares;2;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019081;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1744;Puna(C.Villa Talavera);332;Esc. Jose Maria Linares;3;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019091;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1744;Puna(C.Villa Talavera);332;Esc. Jose Maria Linares;4;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019101;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1744;Puna(C.Villa Talavera);332;Esc. Jose Maria Linares;5;130;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019111;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1744;Puna(C.Villa Talavera);333;Coleg. Litoral;1;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019121;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1744;Puna(C.Villa Talavera);333;Coleg. Litoral;2;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019131;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1744;Puna(C.Villa Talavera);333;Coleg. Litoral;3;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019141;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1744;Puna(C.Villa Talavera);333;Coleg. Litoral;4;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019151;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1744;Puna(C.Villa Talavera);333;Coleg. Litoral;5;90;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019161;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1745;Yascapi;334;Esc. Yascapi;1;238;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019171;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1746;Belen;32416;U. E. Tres Cruces Alcatuyo;1;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019181;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1746;Belen;32416;U. E. Tres Cruces Alcatuyo;2;23;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019191;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1746;Belen;335;U.E. Belen;1;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019201;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1746;Belen;335;U.E. Belen;2;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019211;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1746;Belen;335;U.E. Belen;3;80;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019221;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1747;Miculpaya;336;U.E. Miculpaya;1;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019231;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1747;Miculpaya;336;U.E. Miculpaya;2;154;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019241;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1748;Marasa;337;U.E. Jose Alonso De Ibañez;1;224;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019251;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1749;San Lorenzo;338;U.E. Luis Espinal De San Lorenzo;1;222;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019261;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1750;Suquicha;339;U.E. Fray Franco Valli Brogi De Suquicha;1;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019271;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1750;Suquicha;339;U.E. Fray Franco Valli Brogi De Suquicha;2;120;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019281;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1751;Esmeralda Baja;340;U.E. 20 de Octubre;1;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019291;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1751;Esmeralda Baja;340;U.E. 20 de Octubre;2;127;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019301;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1753;Otavi;342;U.E. Otavi Simon Bolivar;1;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019311;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1753;Otavi;342;U.E. Otavi Simon Bolivar;2;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019321;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1753;Otavi;342;U.E. Otavi Simon Bolivar;3;230;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019331;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1754;Kepallo;343;U.E. Mariscal Andres De Santa Cruz de Kepallo;1;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019341;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1754;Kepallo;343;U.E. Mariscal Andres De Santa Cruz de Kepallo;2;257;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019351;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1755;Nuqui;344;Esc. De Nuqui;1;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019361;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1755;Nuqui;344;Esc. De Nuqui;2;61;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019371;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1756;Pacasi;345;Esc. Tomas Frias;1;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019381;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1756;Pacasi;345;Esc. Tomas Frias;2;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019391;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1756;Pacasi;345;Esc. Tomas Frias;3;31;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019401;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1760;Vilacaya;349;U.E. Vilacaya;1;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019411;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1760;Vilacaya;349;U.E. Vilacaya;2;126;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019421;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1766;Chillcani (Zona D);355;U.E. German Busch;1;152;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019431;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1767;Inchasi;256;U.E. Inchasi;1;95;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019441;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1776;Sepulturas;364;Esc. Sepulturas;1;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019451;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1776;Sepulturas;364;Esc. Sepulturas;2;209;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019461;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1777;Alkatuyo;365;U.E. Raul Perez De Alkatuyo;1;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019471;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1777;Alkatuyo;365;U.E. Raul Perez De Alkatuyo;2;179;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019481;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;2833;Pampa Tambo;471;U.E. Pampa Tambo;1;151;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019491;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;3042;Molino Pampa;531;U.E. Molino Pampa;1;229;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019501;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;3153;Turquiña;562;U.E. Turquiña;1;159;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019511;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;3154;Chacabuco (Estancia Chinoli);563;U.E. Gerardo Maldini de Chacabuco (Estacion Chinoli);1;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019521;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;3154;Chacabuco (Estancia Chinoli);563;U.E. Gerardo Maldini de Chacabuco (Estacion Chinoli);2;84;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019531;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;3274;Capaña;1;U.E. Jose Maria Linares A;1;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019541;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;3274;Capaña;1;U.E. Jose Maria Linares A;2;161;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019551;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;3392;Vilamani;1;U.E. Vilamani;1;156;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019561;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;4255;Cala Cala;25939;U. E. Marcelino Aguirre;1;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019571;ALCALDE;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;4255;Cala Cala;25939;U. E. Marcelino Aguirre;2;76;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019061;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1744;Puna(C.Villa Talavera);332;Esc. Jose Maria Linares;1;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019071;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1744;Puna(C.Villa Talavera);332;Esc. Jose Maria Linares;2;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019081;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1744;Puna(C.Villa Talavera);332;Esc. Jose Maria Linares;3;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019091;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1744;Puna(C.Villa Talavera);332;Esc. Jose Maria Linares;4;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019101;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1744;Puna(C.Villa Talavera);332;Esc. Jose Maria Linares;5;130;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019111;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1744;Puna(C.Villa Talavera);333;Coleg. Litoral;1;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019121;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1744;Puna(C.Villa Talavera);333;Coleg. Litoral;2;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019131;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1744;Puna(C.Villa Talavera);333;Coleg. Litoral;3;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019141;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1744;Puna(C.Villa Talavera);333;Coleg. Litoral;4;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019151;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1744;Puna(C.Villa Talavera);333;Coleg. Litoral;5;90;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019161;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1745;Yascapi;334;Esc. Yascapi;1;238;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019171;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1746;Belen;32416;U. E. Tres Cruces Alcatuyo;1;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019181;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1746;Belen;32416;U. E. Tres Cruces Alcatuyo;2;23;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019191;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1746;Belen;335;U.E. Belen;1;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019201;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1746;Belen;335;U.E. Belen;2;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019211;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1746;Belen;335;U.E. Belen;3;80;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019221;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1747;Miculpaya;336;U.E. Miculpaya;1;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019231;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1747;Miculpaya;336;U.E. Miculpaya;2;154;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019241;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1748;Marasa;337;U.E. Jose Alonso De Ibañez;1;224;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019251;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1749;San Lorenzo;338;U.E. Luis Espinal De San Lorenzo;1;222;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019261;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1750;Suquicha;339;U.E. Fray Franco Valli Brogi De Suquicha;1;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019271;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1750;Suquicha;339;U.E. Fray Franco Valli Brogi De Suquicha;2;120;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019281;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1751;Esmeralda Baja;340;U.E. 20 de Octubre;1;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019291;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1751;Esmeralda Baja;340;U.E. 20 de Octubre;2;127;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019301;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1753;Otavi;342;U.E. Otavi Simon Bolivar;1;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019311;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1753;Otavi;342;U.E. Otavi Simon Bolivar;2;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019321;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1753;Otavi;342;U.E. Otavi Simon Bolivar;3;230;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019331;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1754;Kepallo;343;U.E. Mariscal Andres De Santa Cruz de Kepallo;1;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019341;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1754;Kepallo;343;U.E. Mariscal Andres De Santa Cruz de Kepallo;2;257;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019351;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1755;Nuqui;344;Esc. De Nuqui;1;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019361;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1755;Nuqui;344;Esc. De Nuqui;2;61;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019371;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1756;Pacasi;345;Esc. Tomas Frias;1;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019381;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1756;Pacasi;345;Esc. Tomas Frias;2;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019391;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1756;Pacasi;345;Esc. Tomas Frias;3;31;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019401;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1760;Vilacaya;349;U.E. Vilacaya;1;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019411;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1760;Vilacaya;349;U.E. Vilacaya;2;126;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019421;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1766;Chillcani (Zona D);355;U.E. German Busch;1;152;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019431;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1767;Inchasi;256;U.E. Inchasi;1;95;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019441;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1776;Sepulturas;364;Esc. Sepulturas;1;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019451;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1776;Sepulturas;364;Esc. Sepulturas;2;209;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019461;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1777;Alkatuyo;365;U.E. Raul Perez De Alkatuyo;1;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019471;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;1777;Alkatuyo;365;U.E. Raul Perez De Alkatuyo;2;179;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019481;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;2833;Pampa Tambo;471;U.E. Pampa Tambo;1;151;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019491;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;3042;Molino Pampa;531;U.E. Molino Pampa;1;229;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019501;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;3153;Turquiña;562;U.E. Turquiña;1;159;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019511;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;3154;Chacabuco (Estancia Chinoli);563;U.E. Gerardo Maldini de Chacabuco (Estacion Chinoli);1;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019521;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;3154;Chacabuco (Estancia Chinoli);563;U.E. Gerardo Maldini de Chacabuco (Estacion Chinoli);2;84;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019531;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;3274;Capaña;1;U.E. Jose Maria Linares A;1;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019541;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;3274;Capaña;1;U.E. Jose Maria Linares A;2;161;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019551;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;3392;Vilamani;1;U.E. Vilamani;1;156;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019561;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;4255;Cala Cala;25939;U. E. Marcelino Aguirre;1;240;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+5019571;CONCEJAL;32;BOLIVIA;5;Potosí;35;0;11;José María Linares;1;Puna;4255;Cala Cala;25939;U. E. Marcelino Aguirre;2;76;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0

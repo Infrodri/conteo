@@ -71,7 +71,6 @@ actaSchema.index({ digitadorId: 1 });
 
 // Validación de negocio: suma de votos
 actaSchema.pre('save', function (next) {
-  const sumaVotos = this.votosRecibidos + this.votosBlancos + this.votosNulos;
   // Esta validación se complementa con la del controller
   // donde se compara con votosEmitidos de la mesa
   next();
