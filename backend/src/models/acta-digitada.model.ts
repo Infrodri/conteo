@@ -112,7 +112,7 @@ const actaDigitadaSchema = new Schema<IActaDigitada>(
     digitadorId: {
       type: Schema.Types.ObjectId,
       ref: 'User',
-      required: [true, 'El digitador es requerido'],
+      default: null, // Puede ser null en actas importadas
     },
     status: {
       type: String,

@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import { MesaModel, ActaDigitadaModel, CandidaturaModel, AuditoriaActaModel, AuditoriaAccion, CandidaturaTipo, ActaDigitadaStatus, IActaDigitada } from '@/models';
 import { asyncHandler } from '@/utils/async-handler';
 import { BadRequestError, NotFoundError } from '@/utils/errors';
@@ -82,25 +82,48 @@ export const buscarMesa = asyncHandler(async (req: AuthRequest, res: Response): 
   // Obtener actas existentes de esta mesa
   const actas = await ActaDigitadaModel.find({ mesaId: mesa._id });
 
+  // Helper para obtener string ID de campos poblados o no poblados
+  const getObjectIdString = (field: unknown): string => {
+    if (field instanceof mongoose.Types.ObjectId) {
+      return field.toString();
+    }
+    if (typeof field === 'object' && field !== null && '_id' in field) {
+      return (field as { _id: mongoose.Types.ObjectId })._id.toString();
+    }
+    return String(field);
+  };
+  
+  // Helper para obtener propiedad de campos poblados o no poblados
+  const getFieldValue = (field: unknown, prop: string): string => {
+    if (typeof field === 'object' && field !== null) {
+      return (field as Record<string, unknown>)[prop] as string || '';
+    }
+    return '';
+  };
+
   res.json({
     success: true,
     data: {
-      id: mesa._id,
+      id: mesa._id.toString(),
       numeroMesa: mesa.numeroMesa,
-      provincia: (mesa.provinciaId as unknown as { nombre: string }).nombre,
-      municipio: (mesa.municipioId as unknown as { nombre: string }).nombre,
-      localidad: mesa.localidadId ? (mesa.localidadId as unknown as { nombre: string }).nombre : null,
-      recinto: (mesa.recintoId as unknown as { nombre: string }).nombre,
+      provincia: getFieldValue(mesa.provinciaId, 'nombre'),
+      municipioId: getObjectIdString(mesa.municipioId),
+      municipio: getFieldValue(mesa.municipioId, 'nombre'),
+      localidad: mesa.localidadId ? getFieldValue(mesa.localidadId, 'nombre') : null,
+      recinto: getFieldValue(mesa.recintoId, 'nombre'),
       inscritosHabilitados: mesa.inscritosHabilitados,
       estadoAlcalde: mesa.estadoAlcalde,
       estadoConcejal: mesa.estadoConcejal,
+      // Info de digitadores
+      digitadorIdAlcalde: mesa.digitadorIdAlcalde?.toString() || null,
+      digitadorIdConcejal: mesa.digitadorIdConcejal?.toString() || null,
       actas: actas.reduce((acc, acta) => {
         acc[acta.tipo] = {
           id: acta._id,
           status: acta.status,
           votoValido: acta.votoValido,
           votoEmitido: acta.votoEmitido,
-          digitadorId: acta.digitadorId,
+          digitadorId: acta.digitadorId?.toString() || null,
         };
         return acc;
       }, {} as Record<string, unknown>),
@@ -168,10 +191,15 @@ export const getActasMesa = asyncHandler(async (req: AuthRequest, res: Response)
 
 /**
  * Guardar/actualizar acta digitada (parcial o completa)
+ * 
+ * Lógica de permisos:
+ * - OPERADOR: Solo puede editar si la sección NO tiene digitador asignado
+ * - ADMIN: Puede editar cualquier acta en cualquier momento
  */
 export const guardarActaDigitada = asyncHandler(async (req: AuthRequest, res: Response): Promise<void> => {
   const payload = req.body as ActaDigitadaPayload & { confirmar?: boolean };
   const digitadorId = req.user!._id;
+  const isAdmin = req.user!.rol === 'ADMIN';
   const { confirmar = false } = payload;
 
   // 1. Validar que la mesa existe
@@ -187,7 +215,20 @@ export const guardarActaDigitada = asyncHandler(async (req: AuthRequest, res: Re
     );
   }
 
-  // 3. Calcular totales
+  // 3. Verificar permisos por tipo de acta
+  const campoDigitador = payload.tipo === CandidaturaTipo.ALCALDE ? 'digitadorIdAlcalde' : 'digitadorIdConcejal';
+  const digitadorActual = mesa.get(campoDigitador) as Types.ObjectId | undefined;
+  const tieneDigitador = digitadorActual != null;
+  const esSuDigitador = digitadorActual?.toString() === digitadorId.toString();
+
+  // OPERADOR: No puede editar si ya hay otro digitador
+  if (!isAdmin && tieneDigitador && !esSuDigitador) {
+    throw new BadRequestError(
+      `Esta sección ya fue digitada por otro operador. Solo un administrador puede modificarla.`
+    );
+  }
+
+  // 4. Calcular totales
   const votosCandidatos = [
     payload.voto1 || 0,
     payload.voto2 || 0,
@@ -208,7 +249,7 @@ export const guardarActaDigitada = asyncHandler(async (req: AuthRequest, res: Re
   const totalNuloCalculado = payload.votoNuloDirecto + payload.votoNuloDeclinacion;
   const votoEmitidoCalculado = sumaVotosCandidatos + payload.votoBlanco + totalNuloCalculado;
 
-  // 4. Validaciones según confirmar
+  // 5. Validaciones según confirmar
   if (confirmar) {
     // Validación completa
     if (sumaVotosCandidatos !== payload.votoValido) {
@@ -223,111 +264,112 @@ export const guardarActaDigitada = asyncHandler(async (req: AuthRequest, res: Re
     }
   }
 
-  // 5. Buscar acta existente
-  const actaExistente = await ActaDigitadaModel.findOne({
-    mesaId: payload.mesaId,
-    tipo: payload.tipo,
-  });
-
-  // Verificar permisos si existe
-  if (actaExistente) {
-    if (actaExistente.digitadorId.toString() !== digitadorId.toString() && req.user!.rol !== 'ADMIN') {
-      throw new BadRequestError('Solo el digitador original puede editar esta acta');
-    }
-  }
-
-  // 6. Crear o actualizar
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
   try {
+    // 6. Crear o actualizar (simplificado para MongoDB Atlas)
     let acta: IActaDigitada;
 
+    // Preparar datos del acta
+    const actaData = {
+      voto1: payload.voto1 || 0,
+      voto2: payload.voto2 || 0,
+      voto3: payload.voto3 || 0,
+      voto4: payload.voto4 || 0,
+      voto5: payload.voto5 || 0,
+      voto6: payload.voto6 || 0,
+      voto7: payload.voto7 || 0,
+      voto8: payload.voto8 || 0,
+      voto9: payload.voto9 || 0,
+      voto10: payload.voto10 || 0,
+      voto11: payload.voto11 || 0,
+      voto12: payload.voto12 || 0,
+      voto13: payload.voto13 || 0,
+      votoValido: payload.votoValido,
+      votoBlanco: payload.votoBlanco,
+      votoNuloDirecto: payload.votoNuloDirecto,
+      votoNuloDeclinacion: payload.votoNuloDeclinacion,
+      totalVotoNulo: totalNuloCalculado,
+      votoEmitido: payload.votoEmitido,
+      status: confirmar ? ActaDigitadaStatus.VALIDA : ActaDigitadaStatus.PARCIAL,
+      digitadorId: digitadorId,
+      fechaDigitacion: new Date(),
+    };
+
     if (actaExistente) {
-      // Actualizar campos existentes
-      actaExistente.voto1 = payload.voto1 ?? actaExistente.voto1;
-      actaExistente.voto2 = payload.voto2 ?? actaExistente.voto2;
-      actaExistente.voto3 = payload.voto3 ?? actaExistente.voto3;
-      actaExistente.voto4 = payload.voto4 ?? actaExistente.voto4;
-      actaExistente.voto5 = payload.voto5 ?? actaExistente.voto5;
-      actaExistente.voto6 = payload.voto6 ?? actaExistente.voto6;
-      actaExistente.voto7 = payload.voto7 ?? actaExistente.voto7;
-      actaExistente.voto8 = payload.voto8 ?? actaExistente.voto8;
-      actaExistente.voto9 = payload.voto9 ?? actaExistente.voto9;
-      actaExistente.voto10 = payload.voto10 ?? actaExistente.voto10;
-      actaExistente.voto11 = payload.voto11 ?? actaExistente.voto11;
-      actaExistente.voto12 = payload.voto12 ?? actaExistente.voto12;
-      actaExistente.voto13 = payload.voto13 ?? actaExistente.voto13;
-      actaExistente.votoValido = payload.votoValido;
-      actaExistente.votoBlanco = payload.votoBlanco;
-      actaExistente.votoNuloDirecto = payload.votoNuloDirecto;
-      actaExistente.votoNuloDeclinacion = payload.votoNuloDeclinacion;
-      actaExistente.totalVotoNulo = totalNuloCalculado;
-      actaExistente.votoEmitido = payload.votoEmitido;
-      if (payload.votoValidoReal !== undefined) actaExistente.votoValidoReal = payload.votoValidoReal;
-      if (payload.votoEmitidoReal !== undefined) actaExistente.votoEmitidoReal = payload.votoEmitidoReal;
-      actaExistente.status = confirmar ? ActaDigitadaStatus.VALIDA : ActaDigitadaStatus.PARCIAL;
-      if (payload.observaciones) actaExistente.observaciones = payload.observaciones;
-      acta = actaExistente;
+      // Preparar datos para update (sin digitadorId para no sobrescribir)
+      const updateData: Record<string, unknown> = {
+        voto1: actaData.voto1,
+        voto2: actaData.voto2,
+        voto3: actaData.voto3,
+        voto4: actaData.voto4,
+        voto5: actaData.voto5,
+        voto6: actaData.voto6,
+        voto7: actaData.voto7,
+        voto8: actaData.voto8,
+        voto9: actaData.voto9,
+        voto10: actaData.voto10,
+        voto11: actaData.voto11,
+        voto12: actaData.voto12,
+        voto13: actaData.voto13,
+        votoValido: actaData.votoValido,
+        votoBlanco: actaData.votoBlanco,
+        votoNuloDirecto: actaData.votoNuloDirecto,
+        votoNuloDeclinacion: actaData.votoNuloDeclinacion,
+        totalVotoNulo: actaData.totalVotoNulo,
+        votoEmitido: actaData.votoEmitido,
+        status: actaData.status,
+        fechaDigitacion: actaData.fechaDigitacion,
+      };
+      
+      // Solo actualizar digitadorId si no existe o es null
+      if (!actaExistente.digitadorId) {
+        updateData.digitadorId = digitadorId;
+      }
+      
+      await ActaDigitadaModel.updateOne(
+        { _id: actaExistente._id },
+        { $set: updateData }
+      );
+      acta = await ActaDigitadaModel.findById(actaExistente._id) as IActaDigitada;
     } else {
-      // Crear nueva acta
-      acta = new ActaDigitadaModel({
+      acta = await ActaDigitadaModel.create({
         mesaId: payload.mesaId,
         tipo: payload.tipo,
-        digitadorId,
-        voto1: payload.voto1 || 0,
-        voto2: payload.voto2 || 0,
-        voto3: payload.voto3 || 0,
-        voto4: payload.voto4 || 0,
-        voto5: payload.voto5 || 0,
-        voto6: payload.voto6 || 0,
-        voto7: payload.voto7 || 0,
-        voto8: payload.voto8 || 0,
-        voto9: payload.voto9 || 0,
-        voto10: payload.voto10 || 0,
-        voto11: payload.voto11 || 0,
-        voto12: payload.voto12 || 0,
-        voto13: payload.voto13 || 0,
-        votoValido: payload.votoValido,
-        votoBlanco: payload.votoBlanco,
-        votoNuloDirecto: payload.votoNuloDirecto,
-        votoNuloDeclinacion: payload.votoNuloDeclinacion,
-        totalVotoNulo: totalNuloCalculado,
-        votoEmitido: payload.votoEmitido,
-        votoValidoReal: payload.votoValidoReal,
-        votoEmitidoReal: payload.votoEmitidoReal,
-        status: confirmar ? ActaDigitadaStatus.VALIDA : ActaDigitadaStatus.PARCIAL,
-        observaciones: payload.observaciones,
-        fechaDigitacion: new Date(),
+        ...actaData,
       });
     }
 
-    await acta.save({ session });
-
-    // 7. Actualizar estado de la mesa
+    // 7. Actualizar estado de la mesa Y asignar digitador
     const updateFields: Record<string, unknown> = {};
     if (payload.tipo === CandidaturaTipo.ALCALDE) {
       updateFields.estadoAlcalde = confirmar ? 'COMPLETADA' : 'PARCIAL';
+      // Asignar digitador si no tiene
+      if (!mesa.digitadorIdAlcalde) {
+        updateFields.digitadorIdAlcalde = digitadorId;
+      }
     } else {
       updateFields.estadoConcejal = confirmar ? 'COMPLETADA' : 'PARCIAL';
+      // Asignar digitador si no tiene
+      if (!mesa.digitadorIdConcejal) {
+        updateFields.digitadorIdConcejal = digitadorId;
+      }
     }
+    await MesaModel.updateOne({ _id: payload.mesaId }, updateFields);
 
-    await MesaModel.updateOne({ _id: payload.mesaId }, updateFields, { session });
-
-    // 8. Registrar auditoría
-    const auditoria = new AuditoriaActaModel({
-      actaId: acta._id,
-      userId: digitadorId,
-      accion: confirmar ? AuditoriaAccion.CREAR : AuditoriaAccion.CORREGIR,
-      valoresAnteriores: actaExistente ? actaExistente.toObject() : {},
-      valoresNuevos: acta.toObject(),
-      observaciones: confirmar
-        ? `Acta confirmada - Mesa ${mesa.numeroMesa}`
-        : payload.observaciones || 'Guardado parcial',
-    });
-    await auditoria.save({ session });
-
-    await session.commitTransaction();
+    // 8. Registrar auditoría (sin fallar si hay error)
+    try {
+      await AuditoriaActaModel.create({
+        actaId: acta._id,
+        userId: digitadorId,
+        accion: confirmar ? AuditoriaAccion.CREAR : AuditoriaAccion.CORREGIR,
+        valoresAnteriores: actaExistente ? actaExistente.toObject() : {},
+        valoresNuevos: acta.toObject(),
+        observaciones: confirmar
+          ? `Acta confirmada - Mesa ${mesa.numeroMesa}`
+          : payload.observaciones || 'Guardado parcial',
+      });
+    } catch (auditoriaError) {
+      console.error('Error guardando auditoría:', auditoriaError);
+    }
 
     res.status(actaExistente ? 200 : 201).json({
       success: true,
@@ -344,10 +386,7 @@ export const guardarActaDigitada = asyncHandler(async (req: AuthRequest, res: Re
       },
     });
   } catch (error) {
-    await session.abortTransaction();
     throw error;
-  } finally {
-    session.endSession();
   }
 });
 

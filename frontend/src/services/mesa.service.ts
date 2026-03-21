@@ -6,26 +6,29 @@ export interface MesaInfo {
   id: string;
   numeroMesa: number;
   provincia: string;
+  municipioId: string;
   municipio: string;
   localidad: string | null;
   recinto: string;
   inscritosHabilitados: number;
   estadoAlcalde: string;
   estadoConcejal: string;
+  digitadorIdAlcalde: string | null;
+  digitadorIdConcejal: string | null;
   actas?: {
     ALCALDE?: {
       id: string;
       status: ActaDigitadaStatus;
       votoValido: number;
       votoEmitido: number;
-      digitadorId: string;
+      digitadorId: string | null;
     };
     CONCEJAL?: {
       id: string;
       status: ActaDigitadaStatus;
       votoValido: number;
       votoEmitido: number;
-      digitadorId: string;
+      digitadorId: string | null;
     };
   };
 }

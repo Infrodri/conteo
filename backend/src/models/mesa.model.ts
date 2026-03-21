@@ -17,6 +17,8 @@ export interface IMesa extends Document {
   inscritosHabilitados: number;
   estadoAlcalde: MesaEstado;
   estadoConcejal: MesaEstado;
+  digitadorIdAlcalde?: Types.ObjectId; // Quién digitó la sección ALCALDE
+  digitadorIdConcejal?: Types.ObjectId; // Quién digitó la sección CONCEJAL
   createdAt: Date;
   updatedAt: Date;
 }
@@ -61,6 +63,16 @@ const mesaSchema = new Schema<IMesa>(
       type: String,
       enum: Object.values(MesaEstado),
       default: MesaEstado.PENDIENTE,
+    },
+    digitadorIdAlcalde: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      default: null,
+    },
+    digitadorIdConcejal: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      default: null,
     },
   },
   { timestamps: true }
