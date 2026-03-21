@@ -15,7 +15,6 @@ export const DigitacionPage = () => {
   // Usuario actual
   const { user } = useAuthStore();
   const isAdmin = user?.rol === 'ADMIN';
-  const userId = user?.id;
   
   // Estado de ubicación
   const [localidades, setLocalized] = useState<UbicacionItem[]>([]);

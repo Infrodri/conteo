@@ -4,11 +4,19 @@ import { LoginPage } from '@/pages/LoginPage';
 import { DashboardPage } from '@/pages/DashboardPage';
 import { DigitacionPage } from '@/pages/DigitacionPage';
 import { AdminPage } from '@/pages/AdminPage';
+import { ObservacionPage } from '@/pages/ObservacionPage';
 import { Layout } from '@/components/Layout';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated } = useAuthStore();
   return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />;
+};
+
+const AdminRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user, isAuthenticated } = useAuthStore();
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (user?.rol !== 'ADMIN') return <Navigate to="/dashboard" replace />;
+  return <>{children}</>;
 };
 
 const PublicRoute = ({ children }: { children: React.ReactNode }) => {
@@ -28,6 +36,7 @@ function App() {
         <Route path="dashboard" element={<DashboardPage />} />
         <Route path="digitacion" element={<DigitacionPage />} />
         <Route path="admin" element={<AdminPage />} />
+        <Route path="observacion" element={<AdminRoute><ObservacionPage /></AdminRoute>} />
       </Route>
       
       {/* 404 */}

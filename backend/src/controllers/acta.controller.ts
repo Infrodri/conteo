@@ -2,7 +2,7 @@ import { Response } from 'express';
 import mongoose, { Types } from 'mongoose';
 import { MesaModel, ActaDigitadaModel, CandidaturaModel, AuditoriaActaModel, AuditoriaAccion, CandidaturaTipo, ActaDigitadaStatus, IActaDigitada } from '@/models';
 import { asyncHandler } from '@/utils/async-handler';
-import { BadRequestError, NotFoundError } from '@/utils/errors';
+import { BadRequestError, NotFoundError, ForbiddenError } from '@/utils/errors';
 import { AuthRequest } from '@/middleware/auth.middleware';
 
 /**
@@ -456,5 +456,112 @@ export const getAuditoriaActa = asyncHandler(async (req: AuthRequest, res: Respo
   res.json({
     success: true,
     data: auditorias,
+  });
+});
+
+/**
+ * Obtener lista de mesas observadas (con filtros)
+ * Solo ADMIN puede acceder
+ */
+export const getMesasObservadas = asyncHandler(async (req: AuthRequest, res: Response): Promise<void> => {
+  // Validar rol ADMIN
+  if (req.user!.rol !== 'ADMIN') {
+    throw new ForbiddenError('Solo administradores pueden ver esta información');
+  }
+
+  const { localidadId, recintoId, estadoAlcalde, estadoConcejal, digitadorId } = req.query;
+
+  const query: Record<string, unknown> = {};
+  if (localidadId) query.localidadId = new mongoose.Types.ObjectId(localidadId as string);
+  if (recintoId) query.recintoId = new mongoose.Types.ObjectId(recintoId as string);
+  if (estadoAlcalde) query.estadoAlcalde = estadoAlcalde;
+  if (estadoConcejal) query.estadoConcejal = estadoConcejal;
+  if (digitadorId) {
+    query.$or = [
+      { digitadorIdAlcalde: new mongoose.Types.ObjectId(digitadorId as string) },
+      { digitadorIdConcejal: new mongoose.Types.ObjectId(digitadorId as string) },
+    ];
+  }
+
+  const mesas = await MesaModel.find(query)
+    .populate('recintoId', 'nombre')
+    .populate('localidadId', 'nombre codigo')
+    .populate('digitadorIdAlcalde', 'nombre email')
+    .populate('digitadorIdConcejal', 'nombre email')
+    .sort({ updatedAt: -1 })
+    .limit(500);
+
+  // Helper para obtener string de campo poblado
+  const getFieldString = (field: unknown, prop: string): string => {
+    if (!field) return '';
+    if (typeof field === 'string') return field;
+    if (typeof field === 'object') return (field as Record<string, unknown>)[prop] as string || '';
+    return '';
+  };
+
+  res.json({
+    success: true,
+    data: mesas.map((m) => ({
+      id: m._id.toString(),
+      numeroMesa: m.numeroMesa,
+      recinto: getFieldString(m.recintoId, 'nombre'),
+      localidad: getFieldString(m.localidadId, 'nombre'),
+      codigoLocalidad: getFieldString(m.localidadId, 'codigo'),
+      estadoAlcalde: m.estadoAlcalde,
+      estadoConcejal: m.estadoConcejal,
+      digitadorIdAlcalde: m.digitadorIdAlcalde ? getFieldString(m.digitadorIdAlcalde, '_id') : null,
+      digitadorNombreAlcalde: m.digitadorIdAlcalde ? getFieldString(m.digitadorIdAlcalde, 'nombre') : null,
+      digitadorEmailAlcalde: m.digitadorIdAlcalde ? getFieldString(m.digitadorIdAlcalde, 'email') : null,
+      digitadorIdConcejal: m.digitadorIdConcejal ? getFieldString(m.digitadorIdConcejal, '_id') : null,
+      digitadorNombreConcejal: m.digitadorIdConcejal ? getFieldString(m.digitadorIdConcejal, 'nombre') : null,
+      digitadorEmailConcejal: m.digitadorIdConcejal ? getFieldString(m.digitadorIdConcejal, 'email') : null,
+      updatedAt: m.updatedAt,
+    })),
+  });
+});
+
+/**
+ * Desbloquear una sección de mesa (resetear digitadorId)
+ * Solo ADMIN puede acceder
+ */
+export const desbloquearMesa = asyncHandler(async (req: AuthRequest, res: Response): Promise<void> => {
+  // Validar rol ADMIN
+  if (req.user!.rol !== 'ADMIN') {
+    throw new ForbiddenError('Solo administradores pueden desbloquear mesas');
+  }
+
+  const { id } = req.params;
+  const { tipo } = req.body as { tipo?: CandidaturaTipo };
+
+  if (!tipo || !Object.values(CandidaturaTipo).includes(tipo)) {
+    throw new BadRequestError('Tipo debe ser ALCALDE o CONCEJAL');
+  }
+
+  const campoDigitador = tipo === CandidaturaTipo.ALCALDE ? 'digitadorIdAlcalde' : 'digitadorIdConcejal';
+  const campoEstado = tipo === CandidaturaTipo.ALCALDE ? 'estadoAlcalde' : 'estadoConcejal';
+
+  const updateResult = await MesaModel.updateOne(
+    { _id: id },
+    {
+      $set: {
+        [campoDigitador]: null,
+        [campoEstado]: 'PARCIAL',
+      },
+    }
+  );
+
+  if (updateResult.matchedCount === 0) {
+    throw new NotFoundError('Mesa no encontrada');
+  }
+
+  res.json({
+    success: true,
+    message: `Sección ${tipo} desbloqueada exitosamente`,
+    data: {
+      mesaId: id,
+      tipo,
+      digitadorIdReseteado: true,
+      estadoActualizado: 'PARCIAL',
+    },
   });
 });

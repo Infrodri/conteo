@@ -33,6 +33,31 @@ export interface MesaInfo {
   };
 }
 
+export interface MesaObservada {
+  id: string;
+  numeroMesa: number;
+  recinto: string;
+  localidad: string;
+  codigoLocalidad?: string;
+  estadoAlcalde: string;
+  estadoConcejal: string;
+  digitadorIdAlcalde: string | null;
+  digitadorNombreAlcalde: string | null;
+  digitadorEmailAlcalde: string | null;
+  digitadorIdConcejal: string | null;
+  digitadorNombreConcejal: string | null;
+  digitadorEmailConcejal: string | null;
+  updatedAt: string;
+}
+
+export interface MesasObservadasFiltros {
+  localidadId?: string;
+  recintoId?: string;
+  estadoAlcalde?: string;
+  estadoConcejal?: string;
+  digitadorId?: string;
+}
+
 export interface CandidaturaForm {
   id: string;
   tipo: CandidaturaTipo;
@@ -95,6 +120,22 @@ export const mesaService = {
 
   getActasMesa: async (mesaId: string): Promise<ApiResponse<unknown[]>> => {
     const response = await api.get(`/actas/mesa/${mesaId}/actas`);
+    return response.data;
+  },
+
+  // === ADMIN OBSERVACIÓN ===
+  getMesasObservadas: async (filtros?: MesasObservadasFiltros): Promise<ApiResponse<MesaObservada[]>> => {
+    const response = await api.get('/actas/mesas-observadas', { params: filtros });
+    return response.data;
+  },
+
+  desbloquearMesa: async (mesaId: string, tipo: 'ALCALDE' | 'CONCEJAL'): Promise<ApiResponse<{
+    mesaId: string;
+    tipo: string;
+    digitadorIdReseteado: boolean;
+    estadoActualizado: string;
+  }>> => {
+    const response = await api.post(`/actas/mesa/${mesaId}/desbloquear`, { tipo });
     return response.data;
   },
 };
