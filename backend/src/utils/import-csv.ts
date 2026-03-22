@@ -410,18 +410,15 @@ async function importPartidos(): Promise<void> {
       const municipio = await MunicipioModel.findOne({ nombreLower: normalizeText('Puna') });
       if (!municipio) throw new Error('Municipio Puna no encontrado');
       
-      await CandidaturaModel.findOneAndUpdate(
-        { municipioId: municipio._id, tipo, numeroPapeleta: posicion },
-        {
-          partidoId: partido._id,
-          municipioId: municipio._id,
-          tipo,
-          numeroPapeleta: posicion,
-          nombreCandidato: nombreCompleto || `${nombrePartido} - ${candidato}`,
-          esTitular: titularidad.toLowerCase().includes('titular'),
-        },
-        { upsert: true, new: true }
-      );
+      // Crear candidatura SIN upsert (el CSV tiene duplicados en posicion)
+      await CandidaturaModel.create({
+        partidoId: partido._id,
+        municipioId: municipio._id,
+        tipo,
+        numeroPapeleta: posicion,
+        nombreCandidato: nombreCompleto || `${nombrePartido} - ${candidato}`,
+        esTitular: titularidad.toLowerCase().includes('titular'),
+      });
       
       importados++;
       
