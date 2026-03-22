@@ -69,7 +69,11 @@ export const AdminPage = () => {
     setLoadingPartidos(true);
     try {
       const res = await partidoService.getAll();
-      if (res.success && res.data) setPartidos(res.data);
+      if (res.success && res.data) {
+        // Ordenar por nombre
+        const sorted = [...res.data].sort((a, b) => a.nombre.localeCompare(b.nombre));
+        setPartidos(sorted);
+      }
     } catch (err) { console.error('Error cargando partidos:', err); }
     finally { setLoadingPartidos(false); }
   };
@@ -386,9 +390,12 @@ export const AdminPage = () => {
           </div>
           {loadingPartidos ? <div className="flex justify-center py-12"><RefreshCw className="w-8 h-8 animate-spin text-primary-600" /></div> : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
-              {partidos.map(p => (
-                <div key={p._id} className="card p-3 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm" style={{ backgroundColor: p.color }}>
+              {partidos.map((p, idx) => (
+                <div key={p._id} className="card p-3 flex items-center gap-3 relative">
+                  <div className="absolute -top-2 -left-2 w-6 h-6 rounded-full bg-primary-600 text-white text-xs font-bold flex items-center justify-center">
+                    {idx + 1}
+                  </div>
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm ml-4" style={{ backgroundColor: p.color }}>
                     {p.sigla.substring(0, 2)}
                   </div>
                   <div className="flex-1 min-w-0">
