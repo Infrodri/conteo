@@ -265,7 +265,13 @@ export const guardarActaDigitada = asyncHandler(async (req: AuthRequest, res: Re
   }
 
   try {
-    // 6. Crear o actualizar (simplificado para MongoDB Atlas)
+    // 6. Buscar acta existente para esta mesa y tipo
+    const actaExistente = await ActaDigitadaModel.findOne({
+      mesaId: payload.mesaId,
+      tipo: payload.tipo,
+    });
+
+    // 7. Crear o actualizar
     let acta: IActaDigitada;
 
     // Preparar datos del acta

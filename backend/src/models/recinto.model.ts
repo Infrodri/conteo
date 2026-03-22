@@ -5,6 +5,7 @@ export interface IRecinto extends Document {
   nombre: string;
   direccion: string;
   municipioId: Types.ObjectId;
+  localidadId?: Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -26,12 +27,17 @@ const recintoSchema = new Schema<IRecinto>(
       ref: 'Municipio',
       required: [true, 'El municipio es requerido'],
     },
+    localidadId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Localidad',
+    },
   },
   { timestamps: true }
 );
 
 // Indexes
 recintoSchema.index({ municipioId: 1 });
+recintoSchema.index({ localidadId: 1 });
 recintoSchema.index({ nombre: 'text' });
 
 export const RecintoModel = mongoose.model<IRecinto>('Recinto', recintoSchema);
