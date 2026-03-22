@@ -22,6 +22,23 @@ const detectDelimiter = (content: string): string => {
 };
 
 /**
+ * Generar sigla a partir del nombre (primeras letras de cada palabra)
+ * Ej: "MOVIMIENTO NACIONALISTA" → "MN"
+ * Ej: "UNIDAD NACIONAL" → "UN"
+ */
+const generarSigla = (nombre: string): string => {
+  if (!nombre) return 'UNK';
+  const palabras = nombre.trim().split(/\s+/);
+  let sigla = '';
+  for (const palabra of palabras) {
+    if (palabra && palabra.length > 0) {
+      sigla += palabra.charAt(0).toUpperCase();
+    }
+  }
+  return sigla.length > 0 ? sigla : 'UNK';
+};
+
+/**
  * Función para convertir buffer a UTF-8 (maneja diferentes codificaciones)
  */
 const readFileAsUtf8 = (filePath: string): string => {
@@ -180,6 +197,15 @@ export const importarCandidaturas = asyncHandler(async (req: AuthRequest, res: R
   console.log(`[IMPORT] Procesando archivo de candidaturas: ${req.file.originalname}`);
   
   try {
+    // ========== LIMPIAR DATOS EXISTENTES ==========
+    console.log(`[IMPORT] Limpiando datos existentes...`);
+    
+    // 1. Borrar actas, candidaturas, partidos
+    await ActaDigitadaModel.deleteMany({});
+    await CandidaturaModel.deleteMany({});
+    const partidosBorrados = await PartidoModel.deleteMany({});
+    console.log(`[IMPORT] Actas, candidaturas y partidos borrados (${partidosBorrados.deletedCount})`);
+
     // Leer archivo manejando diferentes codificaciones
     const csvContent = readFileAsUtf8(filePath);
     
@@ -220,11 +246,11 @@ export const importarCandidaturas = asyncHandler(async (req: AuthRequest, res: R
         // Crear o buscar Partido
         let partido = await PartidoModel.findOne({ nombre: NombrePartido });
         if (!partido) {
-          const sigla = NombrePartido.substring(0, 3).toUpperCase().replace(/[^A-Z]/g, '');
+          const sigla = generarSigla(NombrePartido);
           const color = `#${Math.floor(Math.random()*16777215).toString(16).padStart(6, '0')}`;
           partido = await PartidoModel.create({
             nombre: NombrePartido,
-            sigla: sigla || 'UNK',
+            sigla,
             color,
           });
         }
