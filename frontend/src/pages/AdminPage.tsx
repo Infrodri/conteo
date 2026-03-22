@@ -389,25 +389,45 @@ export const AdminPage = () => {
             </button>
           </div>
           {loadingPartidos ? <div className="flex justify-center py-12"><RefreshCw className="w-8 h-8 animate-spin text-primary-600" /></div> : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
-              {partidos.map((p, idx) => (
-                <div key={p._id} className="card p-3 flex items-center gap-3 relative">
-                  <div className="absolute -top-2 -left-2 w-6 h-6 rounded-full bg-primary-600 text-white text-xs font-bold flex items-center justify-center">
-                    {idx + 1}
-                  </div>
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm ml-4" style={{ backgroundColor: p.color }}>
-                    {p.sigla.substring(0, 2)}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-sm truncate" title={p.nombre}>{p.nombre}</p>
-                    <p className="text-xs text-gray-500">{p.sigla}</p>
-                  </div>
-                  <div className="flex gap-1">
-                    <button onClick={() => openEditPartido(p)} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded"><Pencil className="w-4 h-4" /></button>
-                    <button onClick={() => handleDeletePartido(p._id)} className="p-1.5 text-red-600 hover:bg-red-50 rounded"><Trash2 className="w-4 h-4" /></button>
-                  </div>
-                </div>
-              ))}
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-3 py-2 text-left">#</th>
+                    <th className="px-3 py-2 text-left">Pos</th>
+                    <th className="px-3 py-2 text-left">Partido</th>
+                    <th className="px-3 py-2 text-left">Sigla</th>
+                    <th className="px-3 py-2 text-left">Color</th>
+                    <th className="px-3 py-2 text-right">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  {partidos.map((p, idx) => (
+                    <tr key={p._id} className="hover:bg-gray-50">
+                      <td className="px-3 py-2 text-gray-400">{idx + 1}</td>
+                      <td className="px-3 py-2">
+                        <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-primary-100 text-primary-700 font-bold text-sm">
+                          {idx + 1}
+                        </span>
+                      </td>
+                      <td className="px-3 py-2 font-medium">{p.nombre}</td>
+                      <td className="px-3 py-2">
+                        <div className="flex items-center gap-2">
+                          <div className="w-6 h-6 rounded-full" style={{ backgroundColor: p.color }} />
+                          <span className="font-bold">{p.sigla}</span>
+                        </div>
+                      </td>
+                      <td className="px-3 py-2">
+                        <span className="inline-block w-6 h-6 rounded border" style={{ backgroundColor: p.color }} />
+                      </td>
+                      <td className="px-3 py-2 text-right">
+                        <button onClick={() => openEditPartido(p)} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded"><Pencil className="w-4 h-4" /></button>
+                        <button onClick={() => handleDeletePartido(p._id)} className="p-1.5 text-red-600 hover:bg-red-50 rounded"><Trash2 className="w-4 h-4" /></button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
           {partidos.length === 0 && !loadingPartidos && <div className="text-center py-12 text-gray-500">No hay partidos.</div>}
