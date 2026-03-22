@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { CheckCircle2, AlertCircle, Loader2, MapPin, Home, Users, FileText, Lock } from 'lucide-react';
+import { CheckCircle2, AlertCircle, Loader2, MapPin, Lock } from 'lucide-react';
 import { adminService, mesaService } from '@/services';
 import type { MesaInfo, CandidaturaForm, ActaDigitadaPayload } from '@/services/mesa.service';
 import { useAuthStore } from '@/stores/auth.store';
@@ -236,23 +236,23 @@ export const DigitacionPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="min-h-screen bg-gray-50 p-3 sm:p-4 lg:p-6">
+      <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
         
         {/* 1. ENCABEZADO */}
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900">Digitación de Actas</h1>
-          <p className="text-gray-500 mt-1">Complete los datos de cada mesa electoral</p>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">Digitación de Actas</h1>
+          <p className="text-gray-500 mt-1 text-sm sm:text-base">Complete los datos de cada mesa electoral</p>
         </div>
 
         {/* 2. SECCIÓN: SELECCIONAR UBICACIÓN */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-            <MapPin className="w-5 h-5 text-blue-600" />
+        <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-6">
+          <h2 className="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center gap-2">
+            <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
             Seleccionar Ubicación
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {/* Localidad */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Localidad</label>
@@ -263,7 +263,7 @@ export const DigitacionPage = () => {
                   setSelectedRecinto('');
                   setSelectedMesa(null);
                 }}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                className="w-full px-3 py-3 sm:px-4 sm:py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-base"
               >
                 <option value="">Seleccionar...</option>
                 {localidades.map(l => (
@@ -284,7 +284,7 @@ export const DigitacionPage = () => {
                   setSelectedMesa(null);
                 }}
                 disabled={!selectedLocalidad}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl disabled:bg-gray-100 disabled:cursor-not-allowed focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                className="w-full px-3 py-3 sm:px-4 sm:py-3 border border-gray-300 rounded-xl disabled:bg-gray-100 disabled:cursor-not-allowed focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-base"
               >
                 <option value="">Seleccionar...</option>
                 {recintos.map(r => (
@@ -294,12 +294,12 @@ export const DigitacionPage = () => {
             </div>
 
             {/* Mesa */}
-            <div>
+            <div className="sm:col-span-2 lg:col-span-1">
               <label className="block text-sm font-medium text-gray-700 mb-2">Mesa</label>
               <select
                 onChange={(e) => seleccionarMesa(e.target.value)}
                 disabled={!selectedRecinto}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl disabled:bg-gray-100 disabled:cursor-not-allowed focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                className="w-full px-3 py-3 sm:px-4 sm:py-3 border border-gray-300 rounded-xl disabled:bg-gray-100 disabled:cursor-not-allowed focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-base"
               >
                 <option value="">Seleccionar...</option>
                 {mesas.map(m => (
@@ -331,39 +331,35 @@ export const DigitacionPage = () => {
 
         {/* 3. ALERTA DE MESA ENCONTRADA */}
         {selectedMesa && !loading && (
-          <div className="bg-emerald-50 border-2 border-emerald-300 rounded-2xl p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="bg-emerald-500 p-2 rounded-full">
-                <CheckCircle2 className="w-6 h-6 text-white" />
+          <div className="bg-emerald-50 border-2 border-emerald-300 rounded-xl sm:rounded-2xl p-4 sm:p-6">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+              <div className="bg-emerald-500 p-1.5 sm:p-2 rounded-full">
+                <CheckCircle2 className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
               </div>
-              <h2 className="text-xl font-bold text-emerald-800">Mesa Encontrada</h2>
+              <h2 className="text-lg sm:text-xl font-bold text-emerald-800">Mesa {selectedMesa.numeroMesa}</h2>
               {isAdmin && (
-                <span className="ml-auto px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-medium">
+                <span className="ml-auto px-2 sm:px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs sm:text-sm font-medium">
                   Modo Administrador
                 </span>
               )}
             </div>
             
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="bg-white/60 rounded-xl p-4 text-center">
-                <FileText className="w-6 h-6 text-emerald-600 mx-auto mb-1" />
-                <p className="text-2xl font-bold text-gray-900">{selectedMesa.numeroMesa}</p>
-                <p className="text-sm text-gray-500">Número Mesa</p>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
+              <div className="bg-white/60 rounded-xl p-3 sm:p-4 text-center">
+                <p className="text-lg sm:text-2xl font-bold text-gray-900">{selectedMesa.numeroMesa}</p>
+                <p className="text-xs text-gray-500">Mesa</p>
               </div>
-              <div className="bg-white/60 rounded-xl p-4 text-center">
-                <Home className="w-6 h-6 text-emerald-600 mx-auto mb-1" />
-                <p className="text-lg font-semibold text-gray-900 truncate">{selectedMesa.recinto}</p>
-                <p className="text-sm text-gray-500">Recinto</p>
+              <div className="bg-white/60 rounded-xl p-3 sm:p-4 text-center">
+                <p className="text-sm sm:text-lg font-semibold text-gray-900 truncate">{selectedMesa.recinto}</p>
+                <p className="text-xs text-gray-500">Recinto</p>
               </div>
-              <div className="bg-white/60 rounded-xl p-4 text-center">
-                <MapPin className="w-6 h-6 text-emerald-600 mx-auto mb-1" />
-                <p className="text-lg font-semibold text-gray-900">{selectedMesa.municipio}</p>
-                <p className="text-sm text-gray-500">Municipio</p>
+              <div className="bg-white/60 rounded-xl p-3 sm:p-4 text-center">
+                <p className="text-sm sm:text-lg font-semibold text-gray-900">{selectedMesa.municipio}</p>
+                <p className="text-xs text-gray-500">Municipio</p>
               </div>
-              <div className="bg-white/60 rounded-xl p-4 text-center">
-                <Users className="w-6 h-6 text-emerald-600 mx-auto mb-1" />
-                <p className="text-2xl font-bold text-gray-900">{selectedMesa.inscritosHabilitados}</p>
-                <p className="text-sm text-gray-500">Inscritos</p>
+              <div className="bg-white/60 rounded-xl p-3 sm:p-4 text-center">
+                <p className="text-lg sm:text-2xl font-bold text-gray-900">{selectedMesa.inscritosHabilitados}</p>
+                <p className="text-xs text-gray-500">Inscritos</p>
               </div>
             </div>
             
@@ -496,7 +492,7 @@ export const DigitacionPage = () => {
                         onChange={(e) => setAlcaldeData(prev => ({ ...prev, [c.id]: parseInt(e.target.value) || 0 }))}
                         disabled={!puedeEditarAlcalde}
                         className={clsx(
-                          'w-full px-4 py-2 text-center font-bold border-2 rounded-lg',
+                          'w-full px-2 py-3 sm:px-4 sm:py-2 text-center font-bold border-2 rounded-lg text-lg sm:text-base',
                           puedeEditarAlcalde 
                             ? 'border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500' 
                             : 'border-gray-300 bg-gray-200 text-gray-500 cursor-not-allowed'
@@ -607,7 +603,7 @@ export const DigitacionPage = () => {
                         onChange={(e) => setConcejalData(prev => ({ ...prev, [c.id]: parseInt(e.target.value) || 0 }))}
                         disabled={!puedeEditarConcejal}
                         className={clsx(
-                          'w-full px-4 py-2 text-center font-bold border-2 rounded-lg',
+                          'w-full px-2 py-3 sm:px-4 sm:py-2 text-center font-bold border-2 rounded-lg text-lg sm:text-base',
                           puedeEditarConcejal 
                             ? 'border-gray-200 focus:border-purple-500 focus:ring-1 focus:ring-purple-500' 
                             : 'border-gray-300 bg-gray-200 text-gray-500 cursor-not-allowed'
@@ -660,7 +656,7 @@ export const DigitacionPage = () => {
 
         {/* 7. BOTONES */}
         {selectedMesa && !loading && (
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+          <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-6">
             {!puedeEditarAlcalde && !puedeEditarConcejal && (
               <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-xl flex items-center gap-3">
                 <Lock className="w-6 h-6 text-yellow-600" />

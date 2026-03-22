@@ -138,30 +138,30 @@ export const ObservacionPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="min-h-screen bg-gray-50 p-3 sm:p-4 lg:p-6">
+      <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
         
         {/* Encabezado */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Observación de Actas</h1>
-            <p className="text-gray-500 mt-1">Revisar y corregir digitaciones de operadores</p>
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">Observación de Actas</h1>
+            <p className="text-gray-500 mt-1 text-sm sm:text-base">Revisar y corregir digitaciones</p>
           </div>
-          <span className="px-4 py-2 bg-purple-100 text-purple-700 rounded-full text-sm font-medium">
+          <span className="px-3 py-1.5 sm:px-4 sm:py-2 bg-purple-100 text-purple-700 rounded-full text-xs sm:text-sm font-medium">
             Modo Administrador
           </span>
         </div>
         
         {/* Filtros */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">Filtros</h2>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-6">
+          <h2 className="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4">Filtros</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Localidad</label>
               <select
                 value={filtros.localidadId || ''}
                 onChange={(e) => setFiltros(prev => ({ ...prev, localidadId: e.target.value || undefined, recintoId: undefined }))}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                className="w-full px-3 py-3 sm:px-4 sm:py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-base"
               >
                 <option value="">Todas</option>
                 {localidades.map(l => (
@@ -178,7 +178,7 @@ export const ObservacionPage = () => {
                 value={filtros.recintoId || ''}
                 onChange={(e) => setFiltros(prev => ({ ...prev, recintoId: e.target.value || undefined }))}
                 disabled={!filtros.localidadId}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl disabled:bg-gray-100 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                className="w-full px-3 py-3 sm:px-4 sm:py-3 border border-gray-300 rounded-xl disabled:bg-gray-100 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-base"
               >
                 <option value="">Todos</option>
                 {recintos.map(r => (
@@ -192,7 +192,7 @@ export const ObservacionPage = () => {
               <select
                 value={filtros.estadoAlcalde || ''}
                 onChange={(e) => setFiltros(prev => ({ ...prev, estadoAlcalde: e.target.value || undefined }))}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                className="w-full px-3 py-3 sm:px-4 sm:py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-base"
               >
                 <option value="">Todos</option>
                 <option value="PENDIENTE">Pendiente</option>
@@ -206,7 +206,7 @@ export const ObservacionPage = () => {
               <select
                 value={filtros.estadoConcejal || ''}
                 onChange={(e) => setFiltros(prev => ({ ...prev, estadoConcejal: e.target.value || undefined }))}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                className="w-full px-3 py-3 sm:px-4 sm:py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-base"
               >
                 <option value="">Todos</option>
                 <option value="PENDIENTE">Pendiente</option>
