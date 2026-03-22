@@ -430,6 +430,7 @@ export const AdminPage = () => {
               <table className="w-full text-sm">
                 <thead className="bg-gray-50">
                   <tr>
+                    <th className="px-3 py-2 text-left">#</th>
                     <th className="px-3 py-2 text-left">Pos</th>
                     <th className="px-3 py-2 text-left">Partido</th>
                     <th className="px-3 py-2 text-left">Tipo</th>
@@ -439,9 +440,14 @@ export const AdminPage = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y">
-                  {candidaturas.map(c => (
+                  {candidaturas.map((c, idx) => (
                     <tr key={c._id} className="hover:bg-gray-50">
-                      <td className="px-3 py-2 font-medium">{c.numeroPapeleta}</td>
+                      <td className="px-3 py-2 text-gray-400">{idx + 1}</td>
+                      <td className="px-3 py-2">
+                        <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-primary-100 text-primary-700 font-bold text-sm">
+                          {c.numeroPapeleta}
+                        </span>
+                      </td>
                       <td className="px-3 py-2">
                         <div className="flex items-center gap-2">
                           <div className="w-6 h-6 rounded-full" style={{ backgroundColor: c.partidoId.color }} />

@@ -1,0 +1,5 @@
+CodigoMesa	Descripcion	CodigoPais	NombrePais	CodigoDepartamento	NombreDepartamento	CodigoCircunscripcionU	CodigoCircunscripcionE	CodigoProvincia	NombreProvincia	CodigoSeccion	NombreMunicipio	CodigoLocalidad	NombreLocalidad	CodigoRecinto	NombreRecinto	NumeroMesa	InscritosHabilitados	Voto1	Voto2	Voto3	Voto4	Voto5	Voto6	Voto7	Voto8	Voto9	Voto10	Voto11	Voto12	Voto13	VotoValido	VotoBlanco	VotoNuloDirecto	VotoNuloDeclinacion	TotalVotoNulo	VotoEmitido	VotoValidoReal	VotoEmitidoReal
+001	 Mesa A1 - Centro	1	Bolivia	3	Cochabamba	01	01	CER01	Cercado	001	Cochabamba	LOC001	Centro	REC001	 Coliseo	1	250	120	85	45	0	0	0	0	0	0	0	0	0	250	10	5	2	7	267	250	267
+002	 Mesa A2 - Centro	1	Bolivia	3	Cochabamba	01	01	CER01	Cercado	001	Cochabamba	LOC001	Centro	REC001	 Coliseo	2	245	110	90	40	0	0	0	0	0	0	0	0	0	240	8	4	3	7	255	240	255
+003	 Mesa B1 - Sacaba	1	Bolivia	3	Cochabamba	01	01	CER01	Cercado	002	Sacaba	LOC002	Sacaba	REC002	 Unidad	1	300	150	100	50	0	0	0	0	0	0	0	0	0	300	15	8	4	12	327	300	327
+004	 Mesa B2 - Sacaba	1	Bolivia	3	Cochabamba	01	01	CER01	Cercado	002	Sacaba	LOC002	Sacaba	REC002	 Unidad	2	280	140	95	42	0	0	0	0	0	0	0	0	0	277	12	6	3	9	298	277	298

@@ -14,7 +14,8 @@
     "test:single": "jest",
     "seed": "ts-node -r tsconfig-paths/register src/utils/seed.ts",
     "seed:clean": "ts-node -r tsconfig-paths/register src/utils/seed.ts --clean",
-    "import:csv": "ts-node -r tsconfig-paths/register src/utils/import-csv.ts"
+    "import:csv": "ts-node -r tsconfig-paths/register src/utils/import-csv.ts",
+    "export:csv": "ts-node -r tsconfig-paths/register src/scripts/export-csv.ts"
   },
   "dependencies": {
     "@types/iconv-lite": "^0.0.1",

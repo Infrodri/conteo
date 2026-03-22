@@ -1,0 +1,4 @@
+159.41.63.40 ac-lwitkzx-shard-00-00.7xsrf7a.mongodb.net
+159.41.63.47 ac-lwitkzx-shard-00-01.7xsrf7a.mongodb.net
+159.41.63.44 ac-lwitkzx-shard-00-02.7xsrf7a.mongodb.net
+159.41.63.40 conteo.7xsrf7a.mongodb.net

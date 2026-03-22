@@ -1,0 +1,16 @@
+authtoken: 3BHN3Od9zBnAQe8PfoEmUdxuwEm_5HCNkwRJRBUv6NYATZaWE
+
+tunnels:
+  backend:
+    addr: 5000
+    proto: http
+    host_header: localhost:5000
+    subdomain: scem-backend
+    region: us
+  
+  frontend:
+    addr: 4200
+    proto: http
+    host_header: localhost:4200
+    subdomain: scem-frontend
+    region: us
