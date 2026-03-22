@@ -36,18 +36,13 @@ const detectDelimiter = (content: string): string => {
 
 // Generar sigla única a partir del nombre
 const generateSigla = (nombre: string, existingSiglas: Set<string>): string => {
-  // Limpiar y obtener palabras
   const words = nombre.trim().split(/\s+/).filter(w => w.length > 2);
-  
-  // Estrategia 1: Primera letra de cada palabra (hasta 3)
   let sigla = words.slice(0, 3).map(w => w[0].toUpperCase()).join('');
   
-  // Estrategia 2: Primeras letras más últimas letras si es muy corto
   if (sigla.length < 3 && words.length > 0) {
     sigla = words.map(w => w.substring(0, Math.min(2, w.length))).join('').toUpperCase();
   }
   
-  // Si ya existe, agregar números
   if (existingSiglas.has(sigla)) {
     let counter = 2;
     while (existingSiglas.has(`${sigla}${counter}`)) {
@@ -59,71 +54,93 @@ const generateSigla = (nombre: string, existingSiglas: Set<string>): string => {
   return sigla;
 };
 
-const mapAlcaldesRow = (row: Record<string, string>): {
-  NombrePartido: string;
-  Provincia: string;
-  Municipio: string;
-  Candidato: string;
-  Posición: string;
-  Titularidad: string;
-  NombreCompleto: string;
-} => {
-  const getValue = (patterns: string[]): string => {
-    for (const key of Object.keys(row)) {
-      const normalizedKey = key.trim().toLowerCase();
-      if (patterns.some(p => normalizedKey.includes(p.toLowerCase()))) {
-        return row[key];
-      }
-    }
-    return '';
-  };
-
-  return {
-    NombrePartido: getValue(['partido']),
-    Provincia: getValue(['provincia']),
-    Municipio: getValue(['municipio']),
-    Candidato: getValue(['candidato']),
-    Posición: getValue(['posici', 'posicion', 'pos', 'numero']),
-    Titularidad: getValue(['titularidad', 'titular', 'tipo']),
-    NombreCompleto: getValue(['nombre completo', 'nombrecandidato', 'nombre', 'candidato']),
-  };
+// Normalizar texto para comparación
+const normalizeText = (text: string): string => {
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // Quitar acentos
+    .replace(/[^a-z0-9\s]/g, '') // Quitar caracteres especiales
+    .trim();
 };
 
-const mapDatosRow = (row: Record<string, string>): Record<string, string | number> => {
-  const result: Record<string, string | number> = {};
+// Buscar o crear provincia
+const getOrCreateProvincia = async (nombre: string): Promise<{ _id: mongoose.Types.ObjectId }> => {
+  const normalized = normalizeText(nombre);
+  let provincia = await ProvinciaModel.findOne({ nombreLower: normalized });
   
-  for (const key of Object.keys(row)) {
-    const normalizedKey = key.trim().toLowerCase().replace(/\s+/g, '');
-    let value: string | number = row[key];
-    
-    const numericFields = ['voto1', 'voto2', 'voto3', 'voto4', 'voto5', 'voto6', 'voto7', 'voto8', 'voto9', 'voto10', 'voto11', 'voto12', 'voto13',
-         'numeromesa', 'inscritoshabilitados', 'votovalidoreal', 'votoemitidoreal'];
-    
-    if (numericFields.some(n => normalizedKey.includes(n))) {
-      value = parseInt(row[key]) || 0;
-    }
-    
-    const keyMappings: Record<string, string> = {
-      'nombreprovincia': 'NombreProvincia',
-      'nombredemunicipio': 'NombreMunicipio',
-      'nombremunicipio': 'NombreMunicipio',
-      'nombrerecinto': 'NombreRecinto',
-      'nombrelocalidad': 'NombreLocalidad',
-      'numeromesa': 'NumeroMesa',
-      'inscritoshabilitados': 'InscritosHabilitados',
-    };
-    
-    for (let v = 1; v <= 13; v++) {
-      keyMappings[`voto${v}`] = `voto${v}`;
-    }
-    
-    const mappedKey = keyMappings[normalizedKey];
-    if (mappedKey) {
-      result[mappedKey] = value;
-    }
+  if (!provincia && nombre) {
+    provincia = await ProvinciaModel.create({
+      nombre: nombre.trim(),
+      nombreLower: normalized,
+      codigo: nombre.substring(0, 5).toUpperCase().replace(/[^A-Z0-9]/g, '') || 'UNK',
+    });
   }
   
-  return result;
+  return provincia!;
+};
+
+// Buscar o crear municipio
+const getOrCreateMunicipio = async (nombre: string, provinciaId?: mongoose.Types.ObjectId): Promise<{ _id: mongoose.Types.ObjectId }> => {
+  const normalized = normalizeText(nombre);
+  let municipio = await MunicipioModel.findOne({ nombreLower: normalized });
+  
+  if (!municipio && nombre) {
+    municipio = await MunicipioModel.create({
+      nombre: nombre.trim(),
+      nombreLower: normalized,
+      codigoINE: `MUN-${nombre.substring(0, 5).toUpperCase().replace(/[^A-Z0-9]/g, '')}`,
+      departamento: '',
+      provinciaId: provinciaId,
+    });
+  }
+  
+  return municipio!;
+};
+
+// Buscar o crear localidad
+const getOrCreateLocalidad = async (nombre: string, municipioId: mongoose.Types.ObjectId): Promise<{ _id: mongoose.Types.ObjectId }> => {
+  const normalized = normalizeText(nombre);
+  let localidad = await LocalidadModel.findOne({ 
+    nombreLower: normalized, 
+    municipioId: municipioId 
+  });
+  
+  if (!localidad && nombre) {
+    localidad = await LocalidadModel.create({
+      nombre: nombre.trim(),
+      nombreLower: normalized,
+      codigo: nombre.substring(0, 5).toUpperCase().replace(/[^A-Z0-9]/g, '') || 'UNK',
+      tipo: 'LOCALIDAD',
+      municipioId: municipioId,
+    });
+  }
+  
+  return localidad!;
+};
+
+// Buscar o crear recinto
+const getOrCreateRecinto = async (nombre: string, municipioId: mongoose.Types.ObjectId, localidadId?: mongoose.Types.ObjectId): Promise<{ _id: mongoose.Types.ObjectId }> => {
+  const normalized = normalizeText(nombre);
+  let recinto = await RecintoModel.findOne({ 
+    nombreLower: normalized, 
+    municipioId: municipioId 
+  });
+  
+  if (!recinto && nombre) {
+    recinto = await RecintoModel.create({
+      nombre: nombre.trim(),
+      nombreLower: normalized,
+      direccion: '',
+      municipioId: municipioId,
+      localidadId: localidadId,
+    });
+  } else if (recinto && localidadId && !recinto.localidadId) {
+    recinto.localidadId = localidadId;
+    await recinto.save();
+  }
+  
+  return recinto!;
 };
 
 async function cleanDB(): Promise<void> {
@@ -131,6 +148,7 @@ async function cleanDB(): Promise<void> {
   await Promise.all([
     ActaDigitadaModel.deleteMany({}),
     MesaModel.deleteMany({}),
+    CandidaturaModel.deleteMany({}),
     RecintoModel.deleteMany({}),
     LocalidadModel.deleteMany({}),
     MunicipioModel.deleteMany({}),
@@ -140,121 +158,41 @@ async function cleanDB(): Promise<void> {
   log('Base de datos limpiada', 'success');
 }
 
-async function importCandidaturas(filePath: string): Promise<void> {
-  log(`Importando candidaturas desde: ${path.basename(filePath)}`, 'info');
+// Actualizar modelos para agregar nombreLower
+async function setupSchemas(): Promise<void> {
+  // Agregar índice a Provincia si no existe
+  try {
+    await ProvinciaModel.collection.createIndex({ nombreLower: 1 }, { unique: true, sparse: true });
+  } catch {}
   
-  const content = readFileAsUtf8(filePath);
-  const delimiter = detectDelimiter(content);
+  try {
+    await MunicipioModel.collection.createIndex({ nombreLower: 1 }, { unique: true, sparse: true });
+  } catch {}
   
-  const records = parse(content, {
-    columns: true,
-    skip_empty_lines: true,
-    trim: true,
-    delimiter,
-  });
-
-  log(`Headers: ${Object.keys(records[0] || {}).join(', ')}`, 'info');
-  log(`Total filas: ${records.length}`, 'info');
-
-  // Recolectar todos los partidos únicos primero
-  const partidosUnicos = new Set<string>();
-  for (const row of records as Record<string, string>[]) {
-    const mapped = mapAlcaldesRow(row);
-    partidosUnicos.add(mapped.NombrePartido);
-  }
-
-  // Generar siglas únicas
-  const existingSiglas = new Set<string>();
-  const partidoSiglas = new Map<string, string>();
-  for (const nombre of partidosUnicos) {
-    const sigla = generateSigla(nombre, existingSiglas);
-    existingSiglas.add(sigla);
-    partidoSiglas.set(nombre, sigla);
-  }
-
-  // Crear todos los partidos primero
-  log('Creando partidos...', 'info');
-  for (const [nombre, sigla] of partidoSiglas) {
-    await PartidoModel.findOneAndUpdate(
-      { nombre },
-      { nombre, sigla, color: `#${Math.floor(Math.random()*16777215).toString(16).padStart(6, '0')}` },
-      { upsert: true, new: true }
-    );
-    log(`  - ${nombre} (${sigla})`, 'info');
-  }
-
-  // Ahora importar candidaturas
-  let importados = 0;
-  let errores = 0;
-
-  for (let i = 0; i < records.length; i++) {
-    const row = records[i] as Record<string, string>;
-    try {
-      const mapped = mapAlcaldesRow(row);
-      const { NombrePartido, Provincia, Municipio, Candidato, Posición, Titularidad, NombreCompleto } = mapped;
-
-      if (!NombrePartido || !Municipio) {
-        throw new Error(`Faltan datos: Partido="${NombrePartido}", Municipio="${Municipio}"`);
-      }
-
-      const tipo = Candidato?.toUpperCase().includes('ALCALDE') 
-        ? CandidaturaTipo.ALCALDE 
-        : CandidaturaTipo.CONCEJAL;
-
-      const partido = await PartidoModel.findOne({ nombre: NombrePartido });
-      if (!partido) throw new Error(`Partido no encontrado: ${NombrePartido}`);
-
-      // Crear Provincia
-      let provincia = await ProvinciaModel.findOne({ nombre: Provincia });
-      if (!provincia && Provincia) {
-        provincia = await ProvinciaModel.create({
-          codigo: Provincia.substring(0, 5).toUpperCase().replace(/[^A-Z0-9]/g, '') || 'UNK',
-          nombre: Provincia,
-        });
-      }
-
-      // Crear Municipio
-      let municipio = await MunicipioModel.findOne({ nombre: Municipio });
-      if (!municipio && Municipio) {
-        municipio = await MunicipioModel.create({
-          nombre: Municipio,
-          codigoINE: `MUN-${Municipio.substring(0, 5).toUpperCase().replace(/[^A-Z0-9]/g, '')}`,
-          departamento: Provincia || '',
-          provinciaId: provincia?._id,
-        });
-      }
-
-      if (!municipio) throw new Error(`No se pudo crear municipio: ${Municipio}`);
-
-      const numeroPapeleta = parseInt(Posición) || (i + 1);
-      
-      await CandidaturaModel.findOneAndUpdate(
-        { municipioId: municipio._id, tipo, numeroPapeleta },
-        {
-          partidoId: partido._id,
-          municipioId: municipio._id,
-          tipo,
-          numeroPapeleta,
-          nombreCandidato: NombreCompleto || `${NombrePartido} - ${Candidato}`,
-          esTitular: Titularidad?.toLowerCase().includes('titular') || false,
-        },
-        { upsert: true, new: true }
-      );
-
-      importados++;
-    } catch (err) {
-      errores++;
-      log(`Fila ${i + 2}: ${err instanceof Error ? err.message : 'Error'}`, 'error');
-    }
-  }
-
-  log(`Candidaturas: ${importados} importados, ${errores} errores`, 'success');
+  try {
+    await LocalidadModel.collection.createIndex({ nombreLower: 1, municipioId: 1 }, { unique: true, sparse: true });
+  } catch {}
+  
+  try {
+    await RecintoModel.collection.createIndex({ nombreLower: 1, municipioId: 1 }, { unique: true, sparse: true });
+  } catch {}
 }
 
-async function importMesas(filePath: string): Promise<void> {
-  log(`Importando mesas desde: ${path.basename(filePath)}`, 'info');
+async function importDataAndMesas(): Promise<void> {
+  log('Configurando esquemas...', 'info');
+  await setupSchemas();
   
-  const content = readFileAsUtf8(filePath);
+  // El CSV de DATOS.csv tiene toda la información
+  const datosPath = path.join(__dirname, '../../data/DATOS.csv');
+  
+  if (!fs.existsSync(datosPath)) {
+    log(`Archivo no encontrado: ${datosPath}`, 'error');
+    return;
+  }
+  
+  log(`Importando desde: ${path.basename(datosPath)}`, 'info');
+  
+  const content = readFileAsUtf8(datosPath);
   const delimiter = detectDelimiter(content);
   
   const records = parse(content, {
@@ -263,165 +201,237 @@ async function importMesas(filePath: string): Promise<void> {
     trim: true,
     delimiter,
   });
-
-  log(`Headers: ${Object.keys(records[0] || {}).slice(0, 8).join(', ')}...`, 'info');
+  
+  log(`Headers: ${Object.keys(records[0] || {}).slice(0, 6).join(', ')}...`, 'info');
   log(`Total filas: ${records.length}`, 'info');
-
+  
   let importados = 0;
   let errores = 0;
-
+  
+  // Procesar cada fila de DATOS.csv
   for (let i = 0; i < records.length; i++) {
     const row = records[i] as Record<string, string>;
+    
     try {
-      const mapped = mapDatosRow(row);
+      const codigoMesa = row['CodigoMesa'] || row['CodigoMesa'.toLowerCase()] || '';
+      const nombreDepto = row['NombreDepartamento'] || row['NombreDepartamento'.toLowerCase()] || '';
+      const nombreProvincia = row['NombreProvincia'] || row['NombreProvincia'.toLowerCase()] || '';
+      const nombreMunicipio = row['NombreMunicipio'] || row['NombreMunicipio'.toLowerCase()] || '';
+      const nombreLocalidad = row['NombreLocalidad'] || row['NombreLocalidad'.toLowerCase()] || '';
+      const nombreRecinto = row['NombreRecinto'] || row['NombreRecinto'.toLowerCase()] || '';
+      const numeroMesa = parseInt(row['NumeroMesa'] || row['NumeroMesa'.toLowerCase()] || '0') || (i + 1);
+      const inscritos = parseInt(row['InscritosHabilitados'] || row['InscritosHabilitados'.toLowerCase()] || '0') || 0;
       
-      const {
-        NombreProvincia,
-        NombreMunicipio,
-        NombreLocalidad,
-        NombreRecinto,
-        NumeroMesa,
-        InscritosHabilitados,
-      } = mapped as Record<string, string | number>;
-
-      if (!NombreMunicipio) {
-        throw new Error(`Faltan datos: Municipio="${NombreMunicipio}"`);
+      // Votos
+      const votos: number[] = [];
+      for (let v = 1; v <= 13; v++) {
+        const key1 = `Voto${v}`;
+        const key2 = `Voto${v}`.toLowerCase();
+        votos.push(parseInt(row[key1] || row[key2] || '0') || 0);
       }
-
-      // Crear Provincia
-      let provincia = await ProvinciaModel.findOne({ nombre: String(NombreProvincia || '') });
-      if (!provincia && NombreProvincia) {
-        provincia = await ProvinciaModel.create({
-          codigo: String(NombreProvincia).substring(0, 5).toUpperCase().replace(/[^A-Z0-9]/g, '') || 'UNK',
-          nombre: String(NombreProvincia),
-        });
-      }
-
-      // Crear Municipio
-      let municipio = await MunicipioModel.findOne({ nombre: String(NombreMunicipio) });
-      if (!municipio) {
-        municipio = await MunicipioModel.create({
-          nombre: String(NombreMunicipio),
-          codigoINE: `MUN-${String(NombreMunicipio).substring(0, 5).toUpperCase().replace(/[^A-Z0-9]/g, '')}`,
-          departamento: String(NombreProvincia || ''),
-          provinciaId: provincia?._id,
-        });
-      }
-
-      // Crear Localidad
-      let localidad = await LocalidadModel.findOne({ nombre: String(NombreLocalidad || ''), municipioId: municipio._id });
-      if (!localidad && NombreLocalidad) {
-        localidad = await LocalidadModel.create({
-          nombre: String(NombreLocalidad).trim(),
-          codigo: String(NombreLocalidad).substring(0, 5).toUpperCase().replace(/[^A-Z0-9]/g, '') || 'UNK',
-          tipo: 'LOCALIDAD',
-          municipioId: municipio._id,
-        });
-      }
-
-      // Crear Recinto
-      let recinto = await RecintoModel.findOne({ nombre: String(NombreRecinto || ''), municipioId: municipio._id });
-      if (!recinto && NombreRecinto) {
-        recinto = await RecintoModel.create({
-          nombre: String(NombreRecinto).trim(),
-          direccion: '',
-          municipioId: municipio._id,
-          localidadId: localidad?._id,
-        });
-      } else if (recinto && localidad && !recinto.localidadId) {
-        recinto.localidadId = localidad._id;
-        await recinto.save();
-      }
-
-      // Crear Mesa
-      const numeroMesa = typeof NumeroMesa === 'number' ? NumeroMesa : parseInt(String(NumeroMesa)) || (i + 1);
       
+      // Crear/obtener ubicación
+      const provincia = await getOrCreateProvincia(nombreProvincia);
+      const municipio = await getOrCreateMunicipio(nombreMunicipio, provincia?._id);
+      const localidad = await getOrCreateLocalidad(nombreLocalidad, municipio._id);
+      const recinto = await getOrCreateRecinto(nombreRecinto, municipio._id, localidad?._id);
+      
+      // Crear o actualizar mesa
       const mesa = await MesaModel.findOneAndUpdate(
-        { numeroMesa, recintoId: recinto?._id },
+        { numeroMesa, recintoId: recinto._id },
         {
           numeroMesa,
           provinciaId: provincia?._id,
           municipioId: municipio._id,
           localidadId: localidad?._id,
-          recintoId: recinto?._id,
-          inscritosHabilitados: typeof InscritosHabilitados === 'number' ? InscritosHabilitados : parseInt(String(InscritosHabilitados)) || 0,
+          recintoId: recinto._id,
+          inscripitosHabilitados: inscritos,
           estadoAlcalde: 'PENDIENTE',
           estadoConcejal: 'PENDIENTE',
         },
         { upsert: true, new: true }
       );
-
-      // Importar actas con votos
-      const votoFields = ['voto1', 'voto2', 'voto3', 'voto4', 'voto5', 'voto6', 'voto7', 'voto8', 'voto9', 'voto10', 'voto11', 'voto12', 'voto13'];
       
-      let votoAlcaldeValido = 0;
-      for (let v = 1; v <= 3; v++) {
-        const key = `voto${v}`;
-        if (mapped[key] !== undefined) {
-          votoAlcaldeValido += Number(mapped[key]) || 0;
-        }
-      }
-
-      // Crear Acta ALCALDE
+      // Crear actas para ALCALDE y CONCEJAL
+      const sumaVotos = votos.slice(0, 3).reduce((a, b) => a + b, 0);
+      
+      // Acta ALCALDE (votos 1-3)
       await ActaDigitadaModel.findOneAndUpdate(
         { mesaId: mesa._id, tipo: CandidaturaTipo.ALCALDE },
         {
           mesaId: mesa._id,
           tipo: CandidaturaTipo.ALCALDE,
-          voto1: Number(mapped.voto1) || 0,
-          voto2: Number(mapped.voto2) || 0,
-          voto3: Number(mapped.voto3) || 0,
-          votoValido: votoAlcaldeValido,
+          voto1: votos[0] || 0,
+          voto2: votos[1] || 0,
+          voto3: votos[2] || 0,
+          votoValido: sumaVotos,
           votoBlanco: 0,
           votoNuloDirecto: 0,
           votoNuloDeclinacion: 0,
           totalVotoNulo: 0,
-          votoEmitido: votoAlcaldeValido,
+          votoEmitido: sumaVotos,
           status: ActaDigitadaStatus.VALIDA,
-          digitadorId: null,
         },
         { upsert: true, new: true }
       );
-
-      // Crear Acta CONCEJAL
+      
+      // Acta CONCEJAL (votos 1-13)
       await ActaDigitadaModel.findOneAndUpdate(
         { mesaId: mesa._id, tipo: CandidaturaTipo.CONCEJAL },
         {
           mesaId: mesa._id,
           tipo: CandidaturaTipo.CONCEJAL,
-          voto1: Number(mapped.voto1) || 0,
-          voto2: Number(mapped.voto2) || 0,
-          voto3: Number(mapped.voto3) || 0,
-          voto4: Number(mapped.voto4) || 0,
-          voto5: Number(mapped.voto5) || 0,
-          voto6: Number(mapped.voto6) || 0,
-          voto7: Number(mapped.voto7) || 0,
-          voto8: Number(mapped.voto8) || 0,
-          voto9: Number(mapped.voto9) || 0,
-          voto10: Number(mapped.voto10) || 0,
-          voto11: Number(mapped.voto11) || 0,
-          voto12: Number(mapped.voto12) || 0,
-          voto13: Number(mapped.voto13) || 0,
-          votoValido: votoAlcaldeValido,
+          voto1: votos[0] || 0,
+          voto2: votos[1] || 0,
+          voto3: votos[2] || 0,
+          voto4: votos[3] || 0,
+          voto5: votos[4] || 0,
+          voto6: votos[5] || 0,
+          voto7: votos[6] || 0,
+          voto8: votos[7] || 0,
+          voto9: votos[8] || 0,
+          voto10: votos[9] || 0,
+          voto11: votos[10] || 0,
+          voto12: votos[11] || 0,
+          voto13: votos[12] || 0,
+          votoValido: sumaVotos,
           votoBlanco: 0,
           votoNuloDirecto: 0,
           votoNuloDeclinacion: 0,
           totalVotoNulo: 0,
-          votoEmitido: votoAlcaldeValido,
+          votoEmitido: sumaVotos,
           status: ActaDigitadaStatus.VALIDA,
-          digitadorId: null,
         },
         { upsert: true, new: true }
       );
-
+      
       importados++;
+      
+      if (importados % 10 === 0) {
+        log(`Procesados: ${importados}/${records.length}`, 'info');
+      }
+      
     } catch (err) {
       errores++;
       log(`Fila ${i + 2}: ${err instanceof Error ? err.message : 'Error'}`, 'error');
     }
   }
+  
+  log(`Mesas y actas: ${importados} importados, ${errores} errores`, 'success');
+}
 
-  log(`Mesas: ${importados} importados, ${errores} errores`, 'success');
+async function importPartidos(): Promise<void> {
+  const partidoPath = path.join(__dirname, '../../data/ALCALDES.csv');
+  
+  if (!fs.existsSync(partidoPath)) {
+    log(`Archivo no encontrado: ${partidoPath}`, 'error');
+    return;
+  }
+  
+  log(`Importando partidos desde: ${path.basename(partidoPath)}`, 'info');
+  
+  const content = readFileAsUtf8(partidoPath);
+  const delimiter = detectDelimiter(content);
+  
+  const records = parse(content, {
+    columns: true,
+    skip_empty_lines: true,
+    trim: true,
+    delimiter,
+  });
+  
+  log(`Partidos CSV: ${records.length} filas`, 'info');
+  
+  // Extraer partidos únicos
+  const partidosUnicos = new Set<string>();
+  for (const row of records as Record<string, string>[]) {
+    const nombreKey = Object.keys(row).find(k => k.toLowerCase().includes('partido'));
+    if (nombreKey && row[nombreKey]) {
+      partidosUnicos.add(row[nombreKey].trim());
+    }
+  }
+  
+  // Crear partidos
+  const existingSiglas = new Set<string>();
+  for (const nombre of partidosUnicos) {
+    const sigla = generateSigla(nombre, existingSiglas);
+    existingSiglas.add(sigla);
+    
+    await PartidoModel.findOneAndUpdate(
+      { nombre },
+      { 
+        nombre, 
+        sigla, 
+        color: `#${Math.floor(Math.random()*16777215).toString(16).padStart(6, '0')}` 
+      },
+      { upsert: true, new: true }
+    );
+    
+    log(`  - ${nombre} (${sigla})`, 'info');
+  }
+  
+  log(`Partidos: ${partidosUnicos.size} creados`, 'success');
+  
+  // Crear candidaturas
+  let importados = 0;
+  let errores = 0;
+  
+  for (const row of records as Record<string, string>[]) {
+    try {
+      // Encontrar las columnas
+      const getVal = (patterns: string[]): string => {
+        for (const key of Object.keys(row)) {
+          const normalized = key.toLowerCase();
+          if (patterns.some(p => normalized.includes(p.toLowerCase()))) {
+            return row[key] || '';
+          }
+        }
+        return '';
+      };
+      
+      const nombrePartido = getVal(['partido']);
+      const candidato = getVal(['candidato']);
+      const posicion = parseInt(getVal(['posic'])) || 1;
+      const nombreCompleto = getVal(['nombre completo', 'nombre']) || candidato;
+      const titularidad = getVal(['titular']);
+      
+      if (!nombrePartido) {
+        throw new Error('Partido vacío');
+      }
+      
+      const tipo = candidato.toUpperCase().includes('ALCALDE') 
+        ? CandidaturaTipo.ALCALDE 
+        : CandidaturaTipo.CONCEJAL;
+      
+      const partido = await PartidoModel.findOne({ nombre: nombrePartido });
+      if (!partido) throw new Error(`Partido no encontrado: ${nombrePartido}`);
+      
+      // Buscar municipio Puna
+      const municipio = await MunicipioModel.findOne({ nombreLower: normalizeText('Puna') });
+      if (!municipio) throw new Error('Municipio Puna no encontrado');
+      
+      await CandidaturaModel.findOneAndUpdate(
+        { municipioId: municipio._id, tipo, numeroPapeleta: posicion },
+        {
+          partidoId: partido._id,
+          municipioId: municipio._id,
+          tipo,
+          numeroPapeleta: posicion,
+          nombreCandidato: nombreCompleto || `${nombrePartido} - ${candidato}`,
+          esTitular: titularidad.toLowerCase().includes('titular'),
+        },
+        { upsert: true, new: true }
+      );
+      
+      importados++;
+      
+    } catch (err) {
+      errores++;
+      log(`Candidatura: ${err instanceof Error ? err.message : 'Error'}`, 'error');
+    }
+  }
+  
+  log(`Candidaturas: ${importados} importados, ${errores} errores`, 'success');
 }
 
 async function run(): Promise<void> {
@@ -437,21 +447,11 @@ async function run(): Promise<void> {
   // Limpiar base de datos
   await cleanDB();
 
-  // Importar candidaturas
-  const alcaldesPath = path.join(__dirname, '../../data/ALCALDES.csv');
-  if (fs.existsSync(alcaldesPath)) {
-    await importCandidaturas(alcaldesPath);
-  } else {
-    log(`Archivo no encontrado: ${alcaldesPath}`, 'error');
-  }
+  // 1. Primero importar datos geográficos y mesas desde DATOS.csv
+  await importDataAndMesas();
 
-  // Importar mesas
-  const datosPath = path.join(__dirname, '../../data/DATOS.csv');
-  if (fs.existsSync(datosPath)) {
-    await importMesas(datosPath);
-  } else {
-    log(`Archivo no encontrado: ${datosPath}`, 'error');
-  }
+  // 2. Luego importar partidos y candidaturas
+  await importPartidos();
 
   console.log('');
   console.log('╔════════════════════════════════════════════╗');

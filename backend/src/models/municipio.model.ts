@@ -3,8 +3,10 @@ import mongoose, { Document, Schema } from 'mongoose';
 export interface IMunicipio extends Document {
   _id: mongoose.Types.ObjectId;
   nombre: string;
+  nombreLower?: string;
   codigoINE: string;
   departamento: string;
+  provinciaId?: mongoose.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -24,8 +26,15 @@ const municipioSchema = new Schema<IMunicipio>(
     },
     departamento: {
       type: String,
-      required: [true, 'El departamento es requerido'],
       trim: true,
+    },
+    provinciaId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Provincia',
+    },
+    nombreLower: {
+      type: String,
+      index: true,
     },
   },
   { timestamps: true }

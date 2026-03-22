@@ -3,6 +3,7 @@ import mongoose, { Document, Schema, Types } from 'mongoose';
 export interface IRecinto extends Document {
   _id: mongoose.Types.ObjectId;
   nombre: string;
+  nombreLower?: string;
   direccion: string;
   municipioId: Types.ObjectId;
   localidadId?: Types.ObjectId;
@@ -30,6 +31,10 @@ const recintoSchema = new Schema<IRecinto>(
     localidadId: {
       type: Schema.Types.ObjectId,
       ref: 'Localidad',
+    },
+    nombreLower: {
+      type: String,
+      index: true,
     },
   },
   { timestamps: true }

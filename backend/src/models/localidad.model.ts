@@ -4,8 +4,9 @@ export interface ILocalidad extends Document {
   _id: mongoose.Types.ObjectId;
   codigo: string;
   nombre: string;
+  nombreLower?: string;
   tipo: 'MUNICIPIO' | 'LOCALIDAD';
-  municipioId?: Types.ObjectId; // Optional for MUNICIPIO tipo
+  municipioId?: Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -32,6 +33,10 @@ const localidadSchema = new Schema<ILocalidad>(
       type: Schema.Types.ObjectId,
       ref: 'Municipio',
       default: null,
+    },
+    nombreLower: {
+      type: String,
+      index: true,
     },
   },
   { timestamps: true }

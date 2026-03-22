@@ -4,6 +4,7 @@ export interface IProvincia extends Document {
   _id: mongoose.Types.ObjectId;
   codigo: string;
   nombre: string;
+  nombreLower?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -21,6 +22,10 @@ const provinciaSchema = new Schema<IProvincia>(
       type: String,
       required: [true, 'El nombre de provincia es requerido'],
       trim: true,
+    },
+    nombreLower: {
+      type: String,
+      index: true,
     },
   },
   { timestamps: true }
