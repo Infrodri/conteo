@@ -5,3 +5,4 @@ export { default as dashboardRoutes } from './dashboard.routes';
 export { default as partidoRoutes } from './partido.routes';
 export { default as candidaturaRoutes } from './candidatura.routes';
 export { default as mesaRoutes } from './mesa.routes';
+export { default as ocrRoutes } from './ocr.routes';

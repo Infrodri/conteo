@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/auth.store';
-import { LogOut, LayoutDashboard, FileText, Settings, Eye, Menu, X } from 'lucide-react';
+import { LogOut, LayoutDashboard, FileText, Settings, Eye, Menu, X, ScanLine } from 'lucide-react';
 import clsx from 'clsx';
 
 export const Layout = () => {
@@ -21,6 +21,7 @@ export const Layout = () => {
       ? [
           { to: '/admin', label: 'Admin', icon: Settings },
           { to: '/observacion', label: 'Observación', icon: Eye },
+          { to: '/ocr', label: 'OCR', icon: ScanLine },
         ] 
       : []
     ),

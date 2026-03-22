@@ -5,6 +5,7 @@ import { DashboardPage } from '@/pages/DashboardPage';
 import { DigitacionPage } from '@/pages/DigitacionPage';
 import { AdminPage } from '@/pages/AdminPage';
 import { ObservacionPage } from '@/pages/ObservacionPage';
+import { OcrPage } from '@/pages/OcrPage';
 import { Layout } from '@/components/Layout';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -37,6 +38,7 @@ function App() {
         <Route path="digitacion" element={<DigitacionPage />} />
         <Route path="admin" element={<AdminPage />} />
         <Route path="observacion" element={<AdminRoute><ObservacionPage /></AdminRoute>} />
+        <Route path="ocr" element={<AdminRoute><OcrPage /></AdminRoute>} />
       </Route>
       
       {/* 404 */}

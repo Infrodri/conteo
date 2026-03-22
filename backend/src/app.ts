@@ -3,7 +3,7 @@ import cors from 'cors';
 import path from 'path';
 import { config } from '@/config';
 import { errorHandler, notFoundHandler } from '@/middleware';
-import { authRoutes, actaRoutes, adminRoutes, dashboardRoutes, partidoRoutes, candidaturaRoutes, mesaRoutes } from '@/routes';
+import { authRoutes, actaRoutes, adminRoutes, dashboardRoutes, partidoRoutes, candidaturaRoutes, mesaRoutes, ocrRoutes } from '@/routes';
 
 export const createApp = (): Application => {
   const app = express();
@@ -29,6 +29,7 @@ export const createApp = (): Application => {
   app.use('/api/partidos', partidoRoutes);
   app.use('/api/candidaturas', candidaturaRoutes);
   app.use('/api/mesas', mesaRoutes);
+  app.use('/api/ocr', ocrRoutes);
 
   // Error handling
   app.use(notFoundHandler);
