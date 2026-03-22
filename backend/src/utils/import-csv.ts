@@ -8,7 +8,7 @@ import path from 'path';
 import { parse } from 'csv-parse/sync';
 import iconv from 'iconv-lite';
 import { config } from '../config';
-import { ProvinciaModel, MunicipioModel, RecintoModel, MesaModel, PartidoModel, CandidaturaModel, ActaDigitadaModel, ActaDigitadaStatus, CandidaturaTipo } from '../models';
+import { ProvinciaModel, MunicipioModel, LocalidadModel, RecintoModel, MesaModel, PartidoModel, CandidaturaModel, ActaDigitadaModel, ActaDigitadaStatus, CandidaturaTipo } from '../models';
 
 const log = (msg: string, type: 'info' | 'success' | 'error' = 'info') => {
   const colors = { info: '\x1b[36m', success: '\x1b[32m', error: '\x1b[31m' };
@@ -131,8 +131,8 @@ async function cleanDB(): Promise<void> {
   await Promise.all([
     ActaDigitadaModel.deleteMany({}),
     MesaModel.deleteMany({}),
-    CandidaturaModel.deleteMany({}),
     RecintoModel.deleteMany({}),
+    LocalidadModel.deleteMany({}),
     MunicipioModel.deleteMany({}),
     ProvinciaModel.deleteMany({}),
     PartidoModel.deleteMany({}),
@@ -308,6 +308,17 @@ async function importMesas(filePath: string): Promise<void> {
         });
       }
 
+      // Crear Localidad
+      let localidad = await LocalidadModel.findOne({ nombre: String(NombreLocalidad || ''), municipioId: municipio._id });
+      if (!localidad && NombreLocalidad) {
+        localidad = await LocalidadModel.create({
+          nombre: String(NombreLocalidad).trim(),
+          codigo: String(NombreLocalidad).substring(0, 5).toUpperCase().replace(/[^A-Z0-9]/g, '') || 'UNK',
+          tipo: 'LOCALIDAD',
+          municipioId: municipio._id,
+        });
+      }
+
       // Crear Recinto
       let recinto = await RecintoModel.findOne({ nombre: String(NombreRecinto || ''), municipioId: municipio._id });
       if (!recinto && NombreRecinto) {
@@ -315,7 +326,11 @@ async function importMesas(filePath: string): Promise<void> {
           nombre: String(NombreRecinto).trim(),
           direccion: '',
           municipioId: municipio._id,
+          localidadId: localidad?._id,
         });
+      } else if (recinto && localidad && !recinto.localidadId) {
+        recinto.localidadId = localidad._id;
+        await recinto.save();
       }
 
       // Crear Mesa
@@ -327,6 +342,7 @@ async function importMesas(filePath: string): Promise<void> {
           numeroMesa,
           provinciaId: provincia?._id,
           municipioId: municipio._id,
+          localidadId: localidad?._id,
           recintoId: recinto?._id,
           inscritosHabilitados: typeof InscritosHabilitados === 'number' ? InscritosHabilitados : parseInt(String(InscritosHabilitados)) || 0,
           estadoAlcalde: 'PENDIENTE',
