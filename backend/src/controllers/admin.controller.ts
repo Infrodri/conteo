@@ -2,7 +2,7 @@ import { Response } from 'express';
 import fs from 'fs';
 import { parse } from 'csv-parse/sync';
 import mongoose from 'mongoose';
-import { ProvinciaModel, MunicipioModel, RecintoModel, MesaModel, PartidoModel, CandidaturaModel, CandidaturaTipo, ActaDigitadaModel, ActaDigitadaStatus } from '@/models';
+import { ProvinciaModel, MunicipioModel, RecintoModel, MesaModel, PartidoModel, CandidaturaModel, CandidaturaTipo, ActaDigitadaModel, ActaDigitadaStatus, LocalidadModel } from '@/models';
 import { asyncHandler } from '@/utils/async-handler';
 import { BadRequestError } from '@/utils/errors';
 import { AuthRequest } from '@/middleware/auth.middleware';
@@ -133,6 +133,7 @@ const mapDatosRow = (row: Record<string, string>): Record<string, string | numbe
       'nombreslocalidad': 'NombreLocalidad',
       'nombrlocalidad': 'NombreLocalidad',
       'nombrelocalidad': 'NombreLocalidad',
+      'codigolocalidad': 'CodigoLocalidad',
       'numeromesa': 'NumeroMesa',
       'inscritoshabilitados': 'InscritosHabilitados',
       'voto1': 'voto1',
@@ -319,6 +320,26 @@ export const importarMesas = asyncHandler(async (req: AuthRequest, res: Response
   console.log(`[IMPORT] Procesando archivo de mesas: ${req.file.originalname}`);
 
   try {
+    // ========== LIMPIAR DATOS EXISTENTES ==========
+    console.log(`[IMPORT] Limpiando datos existentes...`);
+    
+    // 1. Borrar todas las actas digitadas
+    const actasBorradas = await ActaDigitadaModel.deleteMany({});
+    console.log(`[IMPORT] Actas borradas: ${actasBorradas.deletedCount}`);
+    
+    // 2. Borrar todas las mesas
+    const mesasBorradas = await MesaModel.deleteMany({});
+    console.log(`[IMPORT] Mesas borradas: ${mesasBorradas.deletedCount}`);
+    
+    // 3. Borrar ubicación (provincias, municipios, localidades, recintos) para limpio
+    await RecintoModel.deleteMany({});
+    await LocalidadModel.deleteMany({});
+    await MunicipioModel.deleteMany({});
+    await ProvinciaModel.deleteMany({});
+    console.log(`[IMPORT] Ubicación limpiada`);
+
+    console.log(`[IMPORT] Datos limpiados. Iniciando importación...`);
+
     const csvContent = fs.readFileSync(filePath, 'utf-8');
     
     // Detectar separador (tab o coma)
@@ -377,6 +398,25 @@ export const importarMesas = asyncHandler(async (req: AuthRequest, res: Response
           });
         }
 
+        // Crear o buscar Localidad
+        let localidad = await LocalidadModel.findOne({ 
+          nombre: String(NombreLocalidad || ''),
+          municipioId: municipio._id,
+        });
+        if (!localidad && NombreLocalidad) {
+          // Usar CodigoLocalidad del CSV si existe, si no generar uno
+          const codigoLocalidad = mapped.CodigoLocalidad 
+            ? String(mapped.CodigoLocalidad) 
+            : `LOC-${String(NombreLocalidad).substring(0, 5).toUpperCase().replace(/[^A-Z0-9]/g, '')}-${i}`;
+          
+          localidad = await LocalidadModel.create({
+            nombre: String(NombreLocalidad).trim(),
+            codigo: codigoLocalidad,
+            tipo: 'LOCALIDAD',
+            municipioId: municipio._id,
+          });
+        }
+
         // Crear o buscar Recinto
         let recinto = await RecintoModel.findOne({ 
           nombre: String(NombreRecinto || ''),
@@ -387,7 +427,12 @@ export const importarMesas = asyncHandler(async (req: AuthRequest, res: Response
             nombre: String(NombreRecinto).trim(),
             direccion: '',
             municipioId: municipio._id,
+            localidadId: localidad?._id,
           });
+        } else if (recinto && localidad && !recinto.localidadId) {
+          // Actualizar recinto existente con localidad
+          recinto.localidadId = localidad._id;
+          await recinto.save();
         }
 
         // Crear Mesa
@@ -402,6 +447,7 @@ export const importarMesas = asyncHandler(async (req: AuthRequest, res: Response
             numeroMesa,
             provinciaId: provincia?._id,
             municipioId: municipio._id,
+            localidadId: localidad?._id,
             recintoId: recinto?._id,
             inscritosHabilitados: typeof InscritosHabilitados === 'number' ? InscritosHabilitados : parseInt(String(InscritosHabilitados)) || 0,
             estadoAlcalde: 'PENDIENTE',
@@ -584,36 +630,87 @@ export const getStats = asyncHandler(async (_req: AuthRequest, res: Response): P
 
 export const getProvincias = asyncHandler(async (_req: AuthRequest, res: Response): Promise<void> => {
   const provincias = await ProvinciaModel.find().sort({ nombre: 1 });
-  res.json({ success: true, data: provincias });
+  // Mapear _id a id para compatibilidad con frontend
+  const formatted = provincias.map(p => ({
+    id: p._id.toString(),
+    nombre: p.nombre,
+  }));
+  res.json({ success: true, data: formatted });
 });
 
 export const getMunicipios = asyncHandler(async (req: AuthRequest, res: Response): Promise<void> => {
   const { provinciaId } = req.query;
-  const query = provinciaId ? { provinciaId: new mongoose.Types.ObjectId(provinciaId as string) } : {};
+  let query = {};
+  
+  if (provinciaId) {
+    // Verificar si es ObjectId válido o nombre de provincia
+    const isValidObjectId = mongoose.Types.ObjectId.isValid(provinciaId as string);
+    
+    if (isValidObjectId) {
+      // Buscar la provincia para obtener su nombre
+      const provincia = await ProvinciaModel.findById(provinciaId);
+      if (provincia) {
+        query = { departamento: provincia.nombre };
+      }
+    } else {
+      // Es un nombre de provincia directamente
+      query = { departamento: provinciaId as string };
+    }
+  }
+  
   const municipios = await MunicipioModel.find(query).sort({ nombre: 1 });
-  res.json({ success: true, data: municipios });
+  // Mapear _id a id para compatibilidad con frontend
+  const formatted = municipios.map(m => ({
+    id: m._id.toString(),
+    nombre: m.nombre,
+  }));
+  res.json({ success: true, data: formatted });
 });
 
 export const getLocalidads = asyncHandler(async (req: AuthRequest, res: Response): Promise<void> => {
   const { municipioId } = req.query;
-  // Localidades en este modelo son los recintos
-  const query = municipioId ? { municipioId: new mongoose.Types.ObjectId(municipioId as string) } : {};
-  const localidades = await RecintoModel.find(query).sort({ nombre: 1 });
-  res.json({ success: true, data: localidades });
+  // Obtener localidades (no recintos)
+  let query = {};
+  if (municipioId) {
+    query = { municipioId: new mongoose.Types.ObjectId(municipioId as string) };
+  }
+  const localidades = await LocalidadModel.find(query).sort({ nombre: 1 });
+  // Mapear _id a id para compatibilidad con frontend
+  const formatted = localidades.map(l => ({
+    id: l._id.toString(),
+    nombre: l.nombre,
+    codigo: l.codigo,
+  }));
+  res.json({ success: true, data: formatted });
 });
 
 export const getRecintos = asyncHandler(async (req: AuthRequest, res: Response): Promise<void> => {
-  const { municipioId } = req.query;
-  const query = municipioId ? { municipioId: new mongoose.Types.ObjectId(municipioId as string) } : {};
+  const { municipioId, localidadId } = req.query;
+  const query: Record<string, unknown> = {};
+  if (municipioId) query.municipioId = new mongoose.Types.ObjectId(municipioId as string);
+  if (localidadId) query.localidadId = new mongoose.Types.ObjectId(localidadId as string);
   const recintos = await RecintoModel.find(query).sort({ nombre: 1 });
-  res.json({ success: true, data: recintos });
+  // Mapear _id a id para compatibilidad con frontend
+  const formatted = recintos.map(r => ({
+    id: r._id.toString(),
+    nombre: r.nombre,
+  }));
+  res.json({ success: true, data: formatted });
 });
 
 export const getMesas = asyncHandler(async (req: AuthRequest, res: Response): Promise<void> => {
-  const { recintoId, municipioId } = req.query;
+  const { municipioId, localidadId, recintoId } = req.query;
   const query: Record<string, unknown> = {};
   if (recintoId) query.recintoId = new mongoose.Types.ObjectId(recintoId as string);
+  if (localidadId) query.localidadId = new mongoose.Types.ObjectId(localidadId as string);
   if (municipioId) query.municipioId = new mongoose.Types.ObjectId(municipioId as string);
   const mesas = await MesaModel.find(query).sort({ numeroMesa: 1 });
-  res.json({ success: true, data: mesas });
+  // Mapear _id a id para compatibilidad con frontend
+  const formatted = mesas.map(m => ({
+    id: m._id.toString(),
+    numeroMesa: m.numeroMesa,
+    estadoAlcalde: m.estadoAlcalde,
+    estadoConcejal: m.estadoConcejal,
+  }));
+  res.json({ success: true, data: formatted });
 });
