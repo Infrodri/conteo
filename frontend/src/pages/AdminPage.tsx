@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Upload, FileSpreadsheet, Shield, RefreshCw, CheckCircle, XCircle, Database, Plus, Pencil, Trash2, X, PartyPopper, Users, Grid3X3, Download } from 'lucide-react';
+import { Upload, FileSpreadsheet, Shield, RefreshCw, CheckCircle, XCircle, Database, Plus, Pencil, Trash2, X, PartyPopper, Users, Grid3X3, Download, Trash, AlertTriangle } from 'lucide-react';
 import { adminService, type AdminStats } from '@/services/admin.service';
 import { partidoService, type Partido } from '@/services/partido.service';
 import { candidaturaService, type Candidatura } from '@/services/candidatura.service';
@@ -17,6 +17,8 @@ export const AdminPage = () => {
   const [uploading, setUploading] = useState<'candidaturas' | 'mesas' | null>(null);
   const [dragActive, setDragActive] = useState<'candidaturas' | 'mesas' | null>(null);
   const [uploadResult, setUploadResult] = useState<{ success: boolean; message: string } | null>(null);
+  const [limpiando, setLimpiando] = useState(false);
+  const [showLimpiarModal, setShowLimpiarModal] = useState(false);
   
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [loadingStats, setLoadingStats] = useState(true);
@@ -212,6 +214,24 @@ export const AdminPage = () => {
     finally { setUploading(null); }
   };
 
+  const handleLimpiarDatos = async () => {
+    setLimpiando(true);
+    try {
+      const res = await adminService.limpiarDatos();
+      if (res.success) {
+        setUploadResult({ success: true, message: 'Datos limpiados exitosamente. Ahora puedes importar el CSV oficial.' });
+        fetchStats();
+        setShowLimpiarModal(false);
+      } else {
+        setUploadResult({ success: false, message: res.error || 'Error al limpiar datos' });
+      }
+    } catch (err) {
+      setUploadResult({ success: false, message: err instanceof Error ? err.message : 'Error' });
+    } finally {
+      setLimpiando(false);
+    }
+  };
+
   if (!isAdmin) return (
     <div className="flex items-center justify-center h-96">
       <div className="text-center">
@@ -294,6 +314,28 @@ export const AdminPage = () => {
       {/* Tab: Carga CSV */}
       {activeTab === 'carga' && (
         <div className="space-y-6">
+          {/* Botón limpiar datos */}
+          <div className="card p-4 bg-red-50 border-red-200">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-red-100 rounded-lg">
+                  <Trash className="w-5 h-5 text-red-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-red-800">Limpiar Datos Electorales</h3>
+                  <p className="text-sm text-red-600">Borra todas las mesas, actas, partidos y candidaturas. Los usuarios se mantienen.</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowLimpiarModal(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium"
+              >
+                <Trash className="w-4 h-4" />
+                Limpiar Todo
+              </button>
+            </div>
+          </div>
+
           {[{ title: 'Candidaturas (ALCALDES)', type: 'candidaturas' as const, download: 'candidatos_ejemplo.csv' },
            { title: 'Mesas (DATOS)', type: 'mesas' as const, download: 'mesas_ejemplo.csv' }].map(item => (
             <div key={item.type} className="card p-6">
@@ -599,6 +641,64 @@ export const AdminPage = () => {
                 <button onClick={() => setShowMesaModal(false)} className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50">Cancelar</button>
                 <button onClick={handleSaveMesa} className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">{editingMesa ? 'Actualizar' : 'Crear'}</button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Confirmación Limpiar Datos */}
+      {showLimpiarModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full overflow-hidden">
+            <div className="bg-red-50 px-6 py-4 flex items-center gap-3">
+              <AlertTriangle className="w-6 h-6 text-red-600" />
+              <h3 className="text-lg font-bold text-red-800">Confirmar Limpieza</h3>
+            </div>
+            
+            <div className="p-6">
+              <p className="text-gray-600 mb-4">
+                ¿Está seguro que desea borrar <strong>TODOS</strong> los datos electorales?
+              </p>
+              <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-4">
+                <p className="text-sm text-yellow-800">
+                  ⚠️ Se borrarán:
+                </p>
+                <ul className="text-sm text-yellow-700 mt-2 space-y-1">
+                  <li>• Todas las actas digitadas</li>
+                  <li>• Todas las mesas electorales</li>
+                  <li>• Todas las localidades y recintos</li>
+                  <li>• Todos los partidos y candidaturas</li>
+                </ul>
+                <p className="text-sm text-yellow-800 mt-3 font-medium">
+                  ✅ Los usuarios admin/operadores se mantendrán.
+                </p>
+              </div>
+            </div>
+            
+            <div className="px-6 py-4 bg-gray-50 flex justify-end gap-3">
+              <button
+                onClick={() => setShowLimpiarModal(false)}
+                className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg font-medium"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleLimpiarDatos}
+                disabled={limpiando}
+                className="px-4 py-2 bg-red-600 text-white hover:bg-red-700 rounded-lg font-medium flex items-center gap-2 disabled:opacity-50"
+              >
+                {limpiando ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                    Limpiando...
+                  </>
+                ) : (
+                  <>
+                    <Trash className="w-4 h-4" />
+                    Sí, Limpiar Todo
+                  </>
+                )}
+              </button>
             </div>
           </div>
         </div>

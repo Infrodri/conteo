@@ -74,15 +74,14 @@ export const adminService = {
     return response.data;
   },
 
-  getLocalidads: async (municipioId: string): Promise<ApiResponse<UbicacionItem[]>> => {
-    const response = await api.get('/admin/ubicacion/localidades', { params: { municipioId } });
+  getLocalidads: async (municipioId?: string): Promise<ApiResponse<UbicacionItem[]>> => {
+    const params = municipioId ? { municipioId } : {};
+    const response = await api.get('/admin/ubicacion/localidades', { params });
     return response.data;
   },
 
-  getRecintos: async (municipioId: string, localidadId?: string): Promise<ApiResponse<UbicacionItem[]>> => {
-    const params: Record<string, string> = { municipioId };
-    if (localidadId) params.localidadId = localidadId;
-    const response = await api.get('/admin/ubicacion/recintos', { params });
+  getRecintos: async (localidadId: string): Promise<ApiResponse<UbicacionItem[]>> => {
+    const response = await api.get('/admin/ubicacion/recintos', { params: { localidadId } });
     return response.data;
   },
 
@@ -94,6 +93,21 @@ export const adminService = {
     estadoConcejal: string;
   }>>> => {
     const response = await api.get('/admin/ubicacion/mesas', { params: { recintoId } });
+    return response.data;
+  },
+
+  // Limpiar datos electorales
+  limpiarDatos: async (): Promise<ApiResponse<{
+    actasBorradas: number;
+    mesasBorradas: number;
+    recintosBorrados: number;
+    localidadesBorradas: number;
+    municipiosBorrados: number;
+    provinciasBorradas: number;
+    candidaturasBorradas: number;
+    partidosBorrados: number;
+  }>> => {
+    const response = await api.post('/admin/limpiar-datos');
     return response.data;
   },
 };

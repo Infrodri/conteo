@@ -10,6 +10,7 @@ import {
   getLocalidads,
   getRecintos,
   getMesas,
+  limpiarDatosElectorales,
 } from '@/controllers/admin.controller';
 import { authenticate } from '@/middleware/auth.middleware';
 import { UserRole } from '@/models';
@@ -65,6 +66,7 @@ router.get('/ubicacion/mesas', authenticate, getMesas);
 // Rutas de carga (solo admin)
 router.post('/import/candidaturas', requireAdmin, upload.single('file'), importarCandidaturas);
 router.post('/import/mesas', requireAdmin, upload.single('file'), importarMesas);
+router.post('/limpiar-datos', requireAdmin, limpiarDatosElectorales);
 router.get('/stats', authenticate, getStats);
 
 export default router;

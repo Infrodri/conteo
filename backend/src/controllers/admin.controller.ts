@@ -4,7 +4,7 @@ import { parse } from 'csv-parse/sync';
 import mongoose from 'mongoose';
 import { ProvinciaModel, MunicipioModel, RecintoModel, MesaModel, PartidoModel, CandidaturaModel, CandidaturaTipo, ActaDigitadaModel, ActaDigitadaStatus, LocalidadModel } from '@/models';
 import { asyncHandler } from '@/utils/async-handler';
-import { BadRequestError } from '@/utils/errors';
+import { BadRequestError, ForbiddenError } from '@/utils/errors';
 import { AuthRequest } from '@/middleware/auth.middleware';
 
 /**
@@ -713,4 +713,56 @@ export const getMesas = asyncHandler(async (req: AuthRequest, res: Response): Pr
     estadoConcejal: m.estadoConcejal,
   }));
   res.json({ success: true, data: formatted });
+});
+
+/**
+ * Limpiar todos los datos de electoral
+ * Solo ADMIN puede acceder
+ * Mantiene usuarios intactos
+ */
+export const limpiarDatosElectorales = asyncHandler(async (req: AuthRequest, res: Response): Promise<void> => {
+  // Validar rol ADMIN
+  if (req.user!.rol !== 'ADMIN') {
+    throw new ForbiddenError('Solo administradores pueden limpiar datos');
+  }
+
+  console.log(`[CLEAN] Iniciando limpieza de datos electorales...`);
+
+  // 1. Borrar todas las actas digitadas
+  const actasBorradas = await ActaDigitadaModel.deleteMany({});
+  console.log(`[CLEAN] Actas borradas: ${actasBorradas.deletedCount}`);
+
+  // 2. Borrar todas las mesas
+  const mesasBorradas = await MesaModel.deleteMany({});
+  console.log(`[CLEAN] Mesas borradas: ${mesasBorradas.deletedCount}`);
+
+  // 3. Borrar ubicación (provincias, municipios, localidades, recintos)
+  const recintosBorrados = await RecintoModel.deleteMany({});
+  const localidadesBorradas = await LocalidadModel.deleteMany({});
+  const municipiosBorrados = await MunicipioModel.deleteMany({});
+  const provinciasBorradas = await ProvinciaModel.deleteMany({});
+  console.log(`[CLEAN] Recintos: ${recintosBorrados.deletedCount}, Localidades: ${localidadesBorradas.deletedCount}, Municipios: ${municipiosBorrados.deletedCount}, Provincias: ${provinciasBorradas.deletedCount}`);
+
+  // 4. Borrar candidaturas y partidos
+  const candidaturasBorradas = await CandidaturaModel.deleteMany({});
+  const partidosBorrados = await PartidoModel.deleteMany({});
+  console.log(`[CLEAN] Candidaturas: ${candidaturasBorradas.deletedCount}, Partidos: ${partidosBorrados.deletedCount}`);
+
+  console.log(`[CLEAN] Limpieza completada.`);
+  console.log(`[CLEAN] Usuarios preservados.`);
+
+  res.json({
+    success: true,
+    message: 'Datos electorales limpiados exitosamente. Usuarios preservados.',
+    data: {
+      actasBorradas: actasBorradas.deletedCount,
+      mesasBorradas: mesasBorradas.deletedCount,
+      recintosBorrados: recintosBorrados.deletedCount,
+      localidadesBorradas: localidadesBorradas.deletedCount,
+      municipiosBorrados: municipiosBorrados.deletedCount,
+      provinciasBorradas: provinciasBorradas.deletedCount,
+      candidaturasBorradas: candidaturasBorradas.deletedCount,
+      partidosBorrados: partidosBorrados.deletedCount,
+    },
+  });
 });
